@@ -221,3 +221,5 @@ h1,h2,p{margin-top:0}.atlas-hero h1,.world-heading h1{font-family:"Noto Serif SC
  .bestiary-detail{min-height:0;padding:18px}
  .bestiary-detail h3{font-size:23px;margin:12px 0 5px}
 }
+
+.chapter-dock[hidden], .map-legend[hidden] { display: none !important; }
