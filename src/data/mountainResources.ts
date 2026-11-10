@@ -41,7 +41,7 @@ export const mountainResources: MountainResource[] = [
   {id:'guancen-yu',name:'玉',category:'矿物',chapterName:'北山经',mountainId:'north-danhu-2-01',mountainName:'管涔之山',recordText:'其上无木而多草，其下多玉。',sourceUrl:north},
   {id:'daishan-qingbi',name:'青碧',category:'矿物',chapterName:'北山经',mountainId:'north-dai',mountainName:'带山',recordText:'其上多玉，其下多青碧。',sourceUrl:north},
   {id:'dunhong-zongnan',name:'棕枏',category:'植物',chapterName:'北山经',mountainId:'north-dunhong',mountainName:'敦薨之山',recordText:'其上多棕枏，其下多茈草。',sourceUrl:north},
-  {id:'fa jiu-zhe',name:'柘木',category:'植物',chapterName:'北山经',mountainId:'north-danhu-3-22',mountainName:'发鸠之山',recordText:'其上多柘木。',sourceUrl:north},
+  {id:'fajiu-zhe',name:'柘木',category:'植物',chapterName:'北山经',mountainId:'north-danhu-3-22',mountainName:'发鸠之山',recordText:'其上多柘木。',sourceUrl:north},
   {id:'yigao-jinyu',name:'金玉',category:'矿物',chapterName:'东山经',mountainId:'east-shuxu-2-03',mountainName:'峄皋之山',recordText:'其上多金玉，其下多白垩。',sourceUrl:east},
   {id:'dongshi-cangyu',name:'苍玉',category:'矿物',chapterName:'东山经',mountainId:'east-shuxu-4-03',mountainName:'东始之山',recordText:'上多苍玉。',sourceUrl:east},
   {id:'qinshan-jinyu',name:'金玉',category:'矿物',chapterName:'东山经',mountainId:'east-shuxu-4-05',mountainName:'钦山',recordText:'多金玉而无石。',sourceUrl:east},
@@ -52,4 +52,4 @@ export const mountainResources: MountainResource[] = [
   {id:'shengshan-yuhui',name:'藇蕙',category:'植物',chapterName:'中山经',mountainId:'central-bo-5-14',mountainName:'升山',recordText:'其草多藇蕙，多寇脱。',sourceUrl:central},
   {id:'dongting-yintie',name:'银铁',category:'矿物',chapterName:'中山经',mountainId:'central-dongting-12-07',mountainName:'洞庭之山',recordText:'其上多黄金，其下多银铁。',sourceUrl:central},
   {id:'dongting-fruit',name:'柤、梨、橘、櫾',category:'植物',chapterName:'中山经',mountainId:'central-dongting-12-07',mountainName:'洞庭之山',recordText:'其木多柤、梨、橘、櫾。',sourceUrl:central}
-].map((item) => item.id === 'fa jiu-zhe' ? {...item,id:'fajiu-zhe'} : item);
+];
