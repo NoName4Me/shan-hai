@@ -170,7 +170,7 @@ export const additionalMountainRoutes: MountainRoute[] = [
   }),
   makeRoute({
     id:'north-danhu-2',chapterId:'beishan-jing',chapterName:'北山经',sectionName:'北次二经',routeName:'北方山系 · 北次二经',sourceUrl:northSource,reportedMountainCount:17,reportedTotalLi:5690,
-    note:'正文可辨认的山名节点少于篇末计数；水行与流沙的复合路段另行保留，不用节点数量覆盖原文汇总。',
+    note:'篇末记十七山；当前可辨认十六个山名，另将北水行五百里、流沙三百里的特殊路段独立建档，仍保留一处山数差异待校。',
     nodes:[
       {name:'管涔之山',resourceSummary:'汾水出焉；下多玉'},
       {name:'少阳之山',direction:'西',distanceLi:250},
@@ -186,7 +186,8 @@ export const additionalMountainRoutes: MountainRoute[] = [
       {name:'梁渠之山',direction:'北',distanceLi:350},
       {name:'姑灌之山',direction:'北',distanceLi:400},
       {name:'湖灌之山',direction:'北',distanceLi:380},
-      {name:'洹山',distanceText:'北水行五百里、流沙三百里至于洹山'},
+      {name:'流沙',kind:'路段',distanceText:'北水行五百里，流沙三百里'},
+      {name:'洹山',distanceText:'至于洹山'},
       {name:'敦题之山',direction:'北',distanceLi:300}
     ]
   }),
