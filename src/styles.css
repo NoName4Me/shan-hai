@@ -324,3 +324,5 @@ h1,h2,p{margin-top:0}.atlas-hero h1,.world-heading h1{font-family:"Noto Serif SC
  .ritual-card{min-height:132px;padding:11px}
  .ritual-card>strong{font-size:13px}
 }
+
+.route-ritual-preview p{margin:9px 0 0;font:10px/1.8 "Noto Serif SC",serif;color:#b9c7b9}
