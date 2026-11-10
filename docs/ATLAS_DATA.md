@@ -8,16 +8,16 @@ V0.3 为五藏山经五卷各录入一个首段路线，共 80 个具名节点�
 
 ## 2. 数据结构
 
-- \`src/data/mountainRoutes.ts\`
-  - \`mountainRoutes\`：五卷山经首段路线。
-  - \`nodes\`：路线节点，保留山名、方向、与前一节点之间的里程、关联异兽 ID。
-  - \`reportedMountainCount / reportedTotalLi\`：篇末原文汇总。
-  - \`sumOfRecordedIntervalsLi\`：当前逐段数据的程序计算值。
-  - \`auditNote\`：汇总与逐段数据不一致时的校勘说明。
-- \`src/data/bestiary.ts\`
-  - \`bestiary\`：异兽、鸟、鱼、龟等文本条目。
+- `src/data/mountainRoutes.ts`
+  - `mountainRoutes`：五卷山经首段路线。
+  - `nodes`：路线节点，保留山名、方向、与前一节点之间的里程、关联异兽 ID。
+  - `reportedMountainCount / reportedTotalLi`：篇末原文汇总。
+  - `sumOfRecordedIntervalsLi`：当前逐段数据的程序计算值。
+  - `auditNote`：汇总与逐段数据不一致时的校勘说明。
+- `src/data/bestiary.ts`
+  - `bestiary`：异兽、鸟、鱼、龟等文本条目。
   - 每条记录包含经卷、所在山名、形态摘要、原文短引、出处和考据备注。
-- \`src/atlas.ts\`
+- `src/atlas.ts`
   - 十八卷目录、跨海经地点锚点和地图 UI 的示意坐标。
 
 ## 3. 首段路线与里程核对
