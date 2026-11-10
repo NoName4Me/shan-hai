@@ -11,7 +11,7 @@ export default function MountainRoutes({ onOpenBestiary }: { onOpenBestiary: () 
   const relatedCreatures = bestiary.filter((entry) => selectedNode.creatureIds?.includes(entry.id));
   const recordedSum = route.nodes.reduce((sum, node) => sum + (node.distanceLi ?? 0), 0);
   const mountainCount = route.nodes.filter((node) => node.kind !== '路段').length;
-  const relatedRivers = waterways.filter((river) => river.sourceMountainId === selectedNode.id);
+  const relatedRivers = waterways.filter((river) => river.mountainId === selectedNode.id);
 
   const selectRoute = (nextId: string) => {
     const nextRoute = mountainRoutes.find((item) => item.id === nextId);
