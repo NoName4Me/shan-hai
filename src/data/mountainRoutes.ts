@@ -1,4 +1,4 @@
-export type RouteDirection = '东' | '西' | '西南' | '北' | '南' | '东北';
+export type RouteDirection = '东' | '西' | '西南' | '北' | '南' | '东北' | '东南' | '西北';
 
 export type MountainNode = {
   id: string;
@@ -6,6 +6,10 @@ export type MountainNode = {
   direction?: RouteDirection;
   distanceLi?: number;
   creatureIds?: string[];
+  kind?: '山' | '路段';
+  distanceText?: string;
+  resourceSummary?: string;
+  riverIds?: string[];
 };
 
 export type MountainRoute = {
@@ -15,14 +19,14 @@ export type MountainRoute = {
   sectionName: string;
   routeName: string;
   sourceUrl: string;
-  reportedMountainCount: number;
-  reportedTotalLi: number;
+  reportedMountainCount: number | null;
+  reportedTotalLi: number | null;
   sumOfRecordedIntervalsLi: number;
   auditNote: string;
   nodes: MountainNode[];
 };
 
-export const mountainRoutes: MountainRoute[] = [
+const v03Routes: MountainRoute[] = [
   {
     id: 'south-que',
     chapterId: 'nanshan-jing',
@@ -174,6 +178,10 @@ export const mountainRoutes: MountainRoute[] = [
     ]
   }
 ];
+
+import { additionalMountainRoutes } from './mountainRoutesV04';
+
+export const mountainRoutes: MountainRoute[] = [...v03Routes, ...additionalMountainRoutes];
 
 export function getRecordedDistance(route: MountainRoute): number {
   return route.nodes.reduce((sum, node) => sum + (node.distanceLi ?? 0), 0);
