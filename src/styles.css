@@ -306,3 +306,21 @@ h1,h2,p{margin-top:0}.atlas-hero h1,.world-heading h1{font-family:"Noto Serif SC
  .resource-detail{min-height:0;padding:18px}
  .resource-detail h3{font-size:23px;margin:12px 0 5px}
 }
+
+
+/* V0.4 · 山中祀典 */
+.knowledge-subnav{display:flex;gap:6px;margin:18px 0 4px;padding:4px;width:max-content;border:1px solid rgba(196,207,187,.18);background:rgba(5,27,32,.5)}
+.knowledge-subnav button{padding:8px 16px;border:1px solid transparent;background:transparent;color:#9eb2a5;font:10px "Noto Serif SC",serif;letter-spacing:.1em}
+.knowledge-subnav button.active{border-color:rgba(222,194,147,.55);background:rgba(218,190,144,.12);color:#ecd6ae}
+.ritual-card{min-width:0;min-height:145px;padding:13px 14px;text-align:left;border:1px solid rgba(196,207,187,.15);background:rgba(5,27,32,.46);color:#e4e1d3;display:flex;flex-direction:column;transition:background .2s,border-color .2s}
+.ritual-card:hover{background:rgba(218,190,144,.08)}
+.ritual-card.active{border-color:rgba(222,194,147,.65);background:rgba(218,190,144,.11)}
+.ritual-card>strong{font:15px "Noto Serif SC",serif;letter-spacing:.06em;color:#f0e5d1;margin:0 0 7px}
+.ritual-card-deity{font:10px/1.6 "Noto Serif SC",serif;color:#b7c8ba}
+.ritual-detail>p{margin:22px 0 16px;font:12px/1.95 "Noto Serif SC",serif;color:#d5ddce}
+@media(max-width:760px){
+ .knowledge-subnav{margin-top:12px}
+ .knowledge-subnav button{padding:7px 12px;font-size:9px}
+ .ritual-card{min-height:132px;padding:11px}
+ .ritual-card>strong{font-size:13px}
+}
