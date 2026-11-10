@@ -89,7 +89,7 @@ function NineTails() {
   return <group>
     {tails.map((tail,i)=><group key={i}>
       <mesh geometry={tail.geometry} castShadow><meshStandardMaterial color={i%2?'#dcd9c7':'#f1e7d5'} roughness={.72}/></mesh>
-      <mesh position={tail.end.toArray()}><sphereGeometry args={[.15,9,8]}/><meshStandardMaterial color="#f7eee2" roughness={.8}/></mesh>
+      <mesh position={[tail.end.x,tail.end.y,tail.end.z]}><sphereGeometry args={[.15,9,8]}/><meshStandardMaterial color="#f7eee2" roughness={.8}/></mesh>
     </group>)}
   </group>;
 }
@@ -104,9 +104,8 @@ function Fox({onSelect}:{onSelect:()=>void}) {
     onPointerOver={(e)=>{e.stopPropagation();setHovered(true);document.body.style.cursor='pointer'}}
     onPointerOut={()=>{setHovered(false);document.body.style.cursor='auto'}}>
     <NineTails/>
-    <mesh position={[0,1.53,0]} castShadow>
+    <mesh position={[0,1.53,0]} scale={[.69,.70,1.48]} castShadow>
       <sphereGeometry args={[1,24,20]}/><meshStandardMaterial color={hovered?'#fff4e2':'#e6e0cd'} roughness={.85}/>
-      <group scale={[.69,.70,1.48]}/>
     </mesh>
     <mesh position={[0,1.55,-.45]} scale={[.7,.67,1.5]} castShadow><sphereGeometry args={[1,22,16]}/><meshStandardMaterial color="#f3e8d7" roughness={.85}/></mesh>
     <mesh position={[0,2.55,.89]} scale={[.58,.65,.64]} castShadow><sphereGeometry args={[1,24,16]}/><meshStandardMaterial color="#f3ecdd" roughness={.88}/></mesh>

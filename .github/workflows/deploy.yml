@@ -22,9 +22,8 @@ jobs:
       - uses: actions/setup-node@v4
         with:
           node-version: '22'
-          cache: npm
-          cache-dependency-path: package-lock.json
-      - run: npm ci
+      # package-lock.json 尚未提交，首次启动使用 npm install；生成锁文件后可改为 npm ci。
+      - run: npm install --no-audit --no-fund
         env:
           CI: 'true'
       - run: npm run build
