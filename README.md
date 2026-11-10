@@ -2,42 +2,47 @@
 
 基于《山海经》的交互式神话地理舆图与 3D 沉浸体验实验。
 
-## 当前进度：V0.1
+## 当前进度：V0.2
 
-- 可交互的世界概念舆图（入口：青丘）
-- **青丘之山** Three.js / React Three Fiber 3D 场景（山峦、森林、九尾狐、雾效、微光）
-- 鼠标拖动/触摸环视、滚轮缩放、点击九尾狐查看《南山经》文献线索
-- 昆仑、钟山、扶桑、不周山等场景的后续入口占位
-
-注意：地形、方位与人物造型均为艺术性重构，不表示《山海经》原文可以确定的现代地理坐标。首版是交互与美术技术验证，不是十八卷地理考证的最终成果。
+- 十八卷目录：五藏山经、海外四经、海内四经、大荒四经、海内经。
+- 交互舆图：按卷切换高亮地点，查看原文摘录、方位关系和来源。
+- 南山经局部路线：基山 → 青丘之山 → 箕尾之山，展示原文明载的东行里程。
+- 区分《南山经》的“青丘之山”与《海外东经》的“青丘国”，不因同名而合并。
+- 已有 3D 试境：青丘之山；其余地点暂为文献锚点，尚未开放 3D 场景。
 
 ## 技术栈
 
-React 19 + TypeScript + Vite + Three.js + React Three Fiber + Drei + GSAP + Zustand。无后端、无 3D CDN 依赖。界面标题字体优先使用本地宋体，网络可用时会加载 Noto Serif SC。
+React 19 + TypeScript + Vite + Three.js + React Three Fiber + Drei + GSAP + Zustand。无后端、无 3D CDN 依赖。
+
+## 数据原则
+
+地图视觉坐标是示意排布，不是经纬度或历史地理复原。只有标注为“原文路线节点”的金色连线表示文本明确记载的相邻路线方向和里程，连线视觉长度不按里数比例绘制。每个已录入地点都保留原文短引与来源链接。
+
+数据结构和考据边界见 [docs/ATLAS_DATA.md](docs/ATLAS_DATA.md)。
 
 ## 本地开发
 
 需要 Node.js 22。
 
-```bash
+\`\`\`bash
 npm install
 npm run dev
 npm run build
-```
+\`\`\`
 
 ## 部署 GitHub Pages
 
-默认分支为 `master`，工作流在 `.github/workflows/deploy.yml`。
+默认分支为 \`master\`，工作流在 \`.github/workflows/deploy.yml\`。
 
-1. 在仓库 Settings → Pages → Build and deployment 中将 Source 设为 **GitHub Actions**（首次部署需要此操作）。
-2. 此后每次推送到 `master` 自动执行 `npm ci`、`npm run build`、发布 `dist`。
-3. 站点预期地址：https://noname4me.github.io/shan-hai/ 。
+1. 在仓库 Settings → Pages → Build and deployment 中将 Source 设为 **GitHub Actions**。
+2. 推送到 \`master\` 后自动执行依赖安装、\`npm run build\` 并发布 \`dist\`。
+3. 站点：https://noname4me.github.io/shan-hai/ 。
 
-Vite 构建时设置 `GITHUB_PAGES=true`，自动采用 `/shan-hai/` 基础路径。本地开发和其他静态托管平台使用 `/`。
+Vite 构建时设置 \`GITHUB_PAGES=true\`，自动采用 \`/shan-hai/\` 基础路径。本地开发和其他静态托管平台使用 \`/\`。
 
 ## 路线
 
-- V0.1：可运行的世界入口和青丘单场景
-- V0.2：十八卷的地理数据结构与原文溯源
-- V0.3：昆仑、汤谷扶桑等更多神话场景与动线
-- V1.0：场景流式加载、动画角色、性能等级和移动端优化
+- V0.1：世界入口、青丘单场景与 WebGL 兼容回退
+- V0.2：十八卷目录、地理锚点、原文出处与局部路线关系
+- V0.3：异兽/神祇图鉴、场景联动与更多可进入的神话空间
+- V1.0：场景流式加载、角色动画、性能等级和移动端优化

@@ -50,3 +50,56 @@ h1,h2,p{margin-top:0}.atlas-hero h1,.world-heading h1{font-family:"Noto Serif SC
   .webgl-fallback-actions button{font-size:11px}
   .qingqiu-fallback .fallback-landscape{width:175%;max-width:none;transform:translateX(-30%)}
 }
+/* V0.2：十八卷目录与有出处的地理锚点 */
+.map-points{z-index:5}
+.map-route{position:absolute;inset:0;width:100%;height:100%;overflow:visible;pointer-events:none}
+.map-point{transition:opacity .25s,filter .25s}
+.map-point.dimmed{opacity:.26;filter:saturate(.55)}
+.map-point.in-chapter{opacity:.94}
+.map-point.selected .map-pin{background:rgba(229,198,145,.2);box-shadow:0 0 0 9px rgba(229,198,145,.12),0 0 25px rgba(229,198,145,.38)}
+.map-point.scene-ready .map-pin{border-color:#f2d7a6}
+.map-point.scene-ready .map-pin span{background:#f5d9a7}
+.place-panel{position:absolute;z-index:8;right:clamp(24px,6vw,90px);top:clamp(150px,20vh,215px);width:min(330px,calc(100vw - 48px));padding:27px 27px 24px;background:rgba(7,34,39,.92);border:1px solid rgba(224,199,151,.42);backdrop-filter:blur(18px);box-shadow:0 18px 65px rgba(0,0,0,.2);color:#eee7d5}
+.close-place{position:absolute;top:10px;right:14px;background:transparent;border:0;color:#d8c8aa;font-size:23px}
+.place-kicker{font-size:9px;letter-spacing:.16em;color:#d4b787}
+.place-panel h2{font:500 25px "Noto Serif SC",serif;letter-spacing:.12em;margin:12px 0 6px}
+.place-sub{font-size:10px;letter-spacing:.12em;color:#a9c2b6}
+.place-panel blockquote{margin:22px 0 15px;padding-left:14px;border-left:2px solid #d8bd8d;font:15px/1.9 "Noto Serif SC",serif;color:#f0e3ca}
+.place-relation{font:12px/1.85 "Noto Serif SC",serif;color:#d4d9c8;margin-bottom:10px}
+.place-note{font-size:10px;line-height:1.85;color:#9fb4ac;margin-bottom:17px}
+.source-link{display:inline-block;color:#e2c89b;font-size:10px;letter-spacing:.08em;border-bottom:1px solid rgba(226,200,155,.4);padding-bottom:4px}
+.place-enter{display:flex;width:100%;justify-content:space-between;align-items:center;margin-top:18px;padding:12px 14px;border:1px solid #d8bd8d;background:#d8bd8d;color:#17383b;font-size:12px;letter-spacing:.1em}
+.chapter-dock{position:absolute;z-index:7;left:clamp(22px,5vw,75px);right:clamp(22px,5vw,75px);bottom:68px;padding:13px 17px 11px;background:rgba(5,27,33,.77);border:1px solid rgba(196,207,184,.19);backdrop-filter:blur(15px);display:grid;grid-template-columns:auto auto 1fr;align-items:center;column-gap:22px;row-gap:8px}
+.chapter-dock-heading{display:flex;flex-direction:column;gap:5px;white-space:nowrap;color:#e5d7b9;font:12px "Noto Serif SC",serif;letter-spacing:.12em}
+.chapter-dock-heading small{font:9px Inter,sans-serif;color:#9db4aa;letter-spacing:.1em}
+.chapter-groups,.chapter-list{display:flex;align-items:center;gap:5px;min-width:0}
+.chapter-groups button,.chapter-list button{flex:none;background:transparent;border:1px solid rgba(193,205,185,.16);color:#b9c9bb;padding:7px 10px;font-size:10px;letter-spacing:.08em;white-space:nowrap;transition:background .2s,border-color .2s,color .2s}
+.chapter-groups button.active,.chapter-list button.active{background:rgba(216,190,145,.16);border-color:rgba(224,196,147,.66);color:#f0d7ad}
+.chapter-list{overflow-x:auto;scrollbar-width:thin;scrollbar-color:rgba(215,193,153,.45) transparent;padding-bottom:2px}
+.chapter-list button span{font-size:8px;color:#9eaa9d;margin-right:6px}
+.chapter-summary{grid-column:1/-1;margin:0;padding-top:6px;border-top:1px solid rgba(202,211,190,.11);font:10px/1.6 "Noto Serif SC",serif;color:#a9bdb2;letter-spacing:.04em}
+.map-legend{bottom:174px}
+@media(max-width:900px){
+ .chapter-dock{grid-template-columns:1fr;row-gap:7px;bottom:66px;padding:10px 12px}
+ .chapter-dock-heading{flex-direction:row;justify-content:space-between;align-items:center}
+ .chapter-groups,.chapter-list{overflow-x:auto;scrollbar-width:none;padding-bottom:2px}
+ .chapter-groups::-webkit-scrollbar,.chapter-list::-webkit-scrollbar{display:none}
+ .chapter-groups button,.chapter-list button{padding:6px 9px;font-size:9px}
+ .chapter-summary{font-size:9px}
+ .map-legend{bottom:178px;left:22px;right:auto;font-size:9px}
+ .place-panel{right:22px;top:135px;width:290px;padding:22px}
+}
+@media(max-width:700px){
+ .chapter-dock{left:12px;right:12px;bottom:59px;padding:9px 10px;gap:6px}
+ .chapter-dock-heading{font-size:10px}
+ .chapter-dock-heading small{font-size:8px}
+ .chapter-groups button,.chapter-list button{padding:5px 8px;font-size:9px}
+ .chapter-summary{font-size:8px;line-height:1.45}
+ .map-legend{bottom:171px;left:18px;font-size:8px}
+ .place-panel{left:18px;right:18px;top:auto;bottom:226px;width:auto;padding:17px 19px 16px}
+ .place-panel h2{font-size:20px;margin:8px 0 4px}
+ .place-panel blockquote{font-size:12px;line-height:1.7;margin:12px 0 9px}
+ .place-relation{font-size:10px;line-height:1.6;margin-bottom:5px}
+ .place-note{font-size:9px;line-height:1.6;margin-bottom:9px}
+ .place-enter{margin-top:10px;padding:9px 12px}
+}
