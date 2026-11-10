@@ -3,8 +3,9 @@ import { mountainRoutes } from '../data/mountainRoutes';
 import { bestiary } from '../data/bestiary';
 import { waterways } from '../data/waterways';
 import { mountainResources } from '../data/mountainResources';
+import { mountainRituals } from '../data/mountainRituals';
 
-export default function MountainRoutes({ onOpenBestiary, onOpenResources, onOpenWaterways }: { onOpenBestiary: () => void; onOpenResources: () => void; onOpenWaterways: () => void }) {
+export default function MountainRoutes({ onOpenBestiary, onOpenResources, onOpenWaterways, onOpenRituals }: { onOpenBestiary: () => void; onOpenResources: () => void; onOpenWaterways: () => void; onOpenRituals: () => void }) {
   const [routeId, setRouteId] = useState(mountainRoutes[0].id);
   const route = mountainRoutes.find((item) => item.id === routeId) ?? mountainRoutes[0];
   const [selectedNodeId, setSelectedNodeId] = useState(route.nodes[0].id);
@@ -14,6 +15,7 @@ export default function MountainRoutes({ onOpenBestiary, onOpenResources, onOpen
   const mountainCount = route.nodes.filter((node) => node.kind !== '路段').length;
   const relatedRivers = waterways.filter((river) => river.mountainId === selectedNode.id);
   const relatedResources = mountainResources.filter((resource) => resource.mountainId === selectedNode.id);
+  const relatedRitual = mountainRituals.find((ritual) => ritual.routeId === route.id);
 
   const selectRoute = (nextId: string) => {
     const nextRoute = mountainRoutes.find((item) => item.id === nextId);
@@ -71,6 +73,7 @@ export default function MountainRoutes({ onOpenBestiary, onOpenResources, onOpen
           {selectedNode.resourceSummary && <div className="route-resource-summary"><small>原文物产 / 地理记录</small><p>{selectedNode.resourceSummary}</p></div>}
           {relatedRivers.length > 0 && <div className="route-creatures"><small>此山关联水系</small><div>{relatedRivers.map((river) => <span key={river.id}>{river.name}</span>)}</div><button onClick={onOpenWaterways}>查看水系图谱 ↗</button></div>}
           {relatedResources.length > 0 && <div className="route-creatures"><small>此山物产索引</small><div>{relatedResources.map((resource) => <span key={resource.id}>{resource.name}</span>)}</div><button onClick={onOpenResources}>查看山产志 ↗</button></div>}
+          {relatedRitual && <div className="route-creatures route-ritual-preview"><small>本段山中祀典</small><p>{relatedRitual.ritualText}</p><button onClick={onOpenRituals}>查看本段祀典 ↗</button></div>}
           {relatedCreatures.length > 0 ? (
             <div className="route-creatures">
               <small>此山相关异兽</small>
