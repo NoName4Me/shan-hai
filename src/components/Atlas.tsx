@@ -153,7 +153,7 @@ export default function Atlas() {
       {atlasMode !== 'map' && (
         <div className="atlas-knowledge-overlay">
           {atlasMode === 'routes'
-            ? <MountainRoutes onOpenBestiary={() => setAtlasMode('bestiary')} />
+            ? <MountainRoutes onOpenBestiary={() => setAtlasMode('bestiary')} onOpenResources={() => setAtlasMode('resources')} onOpenWaterways={() => setAtlasMode('waterways')} />
             : atlasMode === 'bestiary' ? <Bestiary /> : atlasMode === 'waterways' ? <Waterways /> : <MountainResources />}
         </div>
       )}
