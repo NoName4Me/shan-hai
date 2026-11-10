@@ -1,8 +1,11 @@
 import { useMemo, useState } from 'react';
 import { chapterGroups, chapters, locations } from '../atlas';
+import Bestiary from './Bestiary';
+import MountainRoutes from './MountainRoutes';
 import { useAppStore } from '../store';
 
 export default function Atlas() {
+  const [atlasMode, setAtlasMode] = useState<'map' | 'routes' | 'bestiary'>('map');
   const enter = useAppStore((s) => s.enterQingqiu);
   const [selectedChapterId, setSelectedChapterId] = useState('nanshan-jing');
   const [selectedPlaceId, setSelectedPlaceId] = useState<string | null>(null);
@@ -32,8 +35,13 @@ export default function Atlas() {
   };
 
   return (
-    <section className="atlas-section" aria-label="山海经神话概念舆图">
+    <section className={"atlas-section atlas-mode-" + atlasMode} aria-label="山海经神话概念舆图">
       <div className="atlas-topline"><span>天地有尽 · 山海无垠</span><span>THE ATLAS OF MYTHS / 018 VOLUMES</span></div>
+      <div className="atlas-mode-switch" role="tablist" aria-label="探索内容">
+        <button role="tab" aria-selected={atlasMode === 'map'} className={atlasMode === 'map' ? 'active' : ''} onClick={() => setAtlasMode('map')}>神话舆图</button>
+        <button role="tab" aria-selected={atlasMode === 'routes'} className={atlasMode === 'routes' ? 'active' : ''} onClick={() => setAtlasMode('routes')}>山经路线</button>
+        <button role="tab" aria-selected={atlasMode === 'bestiary'} className={atlasMode === 'bestiary' ? 'active' : ''} onClick={() => setAtlasMode('bestiary')}>异兽图鉴</button>
+      </div>
       <svg className="world-map" viewBox="0 0 1000 640" role="img" aria-label="山海世界艺术概念底图，非精确历史地理图" preserveAspectRatio="xMidYMid slice">
         <defs>
           <linearGradient id="sea" x1="0" y1="0" x2="1" y2="1">
@@ -94,9 +102,9 @@ export default function Atlas() {
           </button>
         ))}
       </div>
-      <div className="map-legend"><span className="tiny-star">✧</span> 金线：原文路线关系 · 地图点位：概念示意</div>
+      <div className="map-legend" hidden={atlasMode !== "map"}><span className="tiny-star">✧</span> 金线：原文路线关系 · 地图点位：概念示意</div>
 
-      {selectedPlace && (
+      {atlasMode === 'map' && selectedPlace && (
         <aside className="place-panel">
           <button className="close-place" onClick={() => setSelectedPlaceId(null)} aria-label="关闭地点详情">×</button>
           <div className="place-kicker">{selectedPlace.evidenceLabel} / VOL. {String(chapters.find((item) => item.id === selectedPlace.chapterId)?.volume ?? 0).padStart(2, '0')}</div>
@@ -112,7 +120,7 @@ export default function Atlas() {
         </aside>
       )}
 
-      <nav className="chapter-dock" aria-label="山海经十八卷导航">
+      <nav className="chapter-dock" aria-label="山海经十八卷导航" hidden={atlasMode !== "map"}>
         <div className="chapter-dock-heading">
           <span>十八卷 · 文本索引</span>
           <small>{selectedChapter.name} / {String(selectedChapter.volume).padStart(2, '0')}</small>
@@ -138,6 +146,13 @@ export default function Atlas() {
         </div>
         <p className="chapter-summary">{selectedChapter.summary}</p>
       </nav>
+      {atlasMode !== 'map' && (
+        <div className="atlas-knowledge-overlay">
+          {atlasMode === 'routes'
+            ? <MountainRoutes onOpenBestiary={() => setAtlasMode('bestiary')} />
+            : <Bestiary />}
+        </div>
+      )}
     </section>
   );
 }
