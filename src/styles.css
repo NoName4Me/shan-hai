@@ -223,3 +223,6 @@ h1,h2,p{margin-top:0}.atlas-hero h1,.world-heading h1{font-family:"Noto Serif SC
 }
 
 .chapter-dock[hidden], .map-legend[hidden] { display: none !important; }
+
+.atlas-mode-switch { top: 157px; }
+@media (max-width: 760px) { .atlas-topline { display: none; } .atlas-mode-switch { top: 112px; left: 20px; right: auto; } .app.atlas .atlas-hero { top: 174px; } }

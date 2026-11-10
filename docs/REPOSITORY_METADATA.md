@@ -16,4 +16,4 @@ Copy these values into the repository's GitHub **About** panel.
   - vite
   - github-pages
 
-The package metadata and README repeat the same description and Pages URL for consistency.
+package.json 与 README 中也已写入相同的 description、homepage 和关键词，保持项目信息一致。
