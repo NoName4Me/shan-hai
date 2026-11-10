@@ -3,10 +3,11 @@ import { chapterGroups, chapters, locations } from '../atlas';
 import Bestiary from './Bestiary';
 import MountainRoutes from './MountainRoutes';
 import Waterways from './Waterways';
+import MountainResources from './MountainResources';
 import { useAppStore } from '../store';
 
 export default function Atlas() {
-  const [atlasMode, setAtlasMode] = useState<'map' | 'routes' | 'bestiary' | 'waterways'>('map');
+  const [atlasMode, setAtlasMode] = useState<'map' | 'routes' | 'bestiary' | 'waterways' | 'resources'>('map');
   const enter = useAppStore((s) => s.enterQingqiu);
   const [selectedChapterId, setSelectedChapterId] = useState('nanshan-jing');
   const [selectedPlaceId, setSelectedPlaceId] = useState<string | null>(null);
@@ -43,6 +44,7 @@ export default function Atlas() {
         <button role="tab" aria-selected={atlasMode === 'routes'} className={atlasMode === 'routes' ? 'active' : ''} onClick={() => setAtlasMode('routes')}>山经路线</button>
         <button role="tab" aria-selected={atlasMode === 'bestiary'} className={atlasMode === 'bestiary' ? 'active' : ''} onClick={() => setAtlasMode('bestiary')}>异兽图鉴</button>
         <button role="tab" aria-selected={atlasMode === 'waterways'} className={atlasMode === 'waterways' ? 'active' : ''} onClick={() => setAtlasMode('waterways')}>山川水系</button>
+        <button role="tab" aria-selected={atlasMode === 'resources'} className={atlasMode === 'resources' ? 'active' : ''} onClick={() => setAtlasMode('resources')}>山产志</button>
       </div>
       <svg className="world-map" viewBox="0 0 1000 640" role="img" aria-label="山海世界艺术概念底图，非精确历史地理图" preserveAspectRatio="xMidYMid slice">
         <defs>
@@ -152,7 +154,7 @@ export default function Atlas() {
         <div className="atlas-knowledge-overlay">
           {atlasMode === 'routes'
             ? <MountainRoutes onOpenBestiary={() => setAtlasMode('bestiary')} />
-            : atlasMode === 'bestiary' ? <Bestiary /> : <Waterways />}
+            : atlasMode === 'bestiary' ? <Bestiary /> : atlasMode === 'waterways' ? <Waterways /> : <MountainResources />}
         </div>
       )}
     </section>
