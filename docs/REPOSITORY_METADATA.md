@@ -12,8 +12,9 @@ Copy these values into the repository's GitHub **About** panel.
   - react-three-fiber
   - interactive-map
   - digital-humanities
+  - textual-hydrology
   - mythology
   - vite
   - github-pages
 
-package.json 与 README 中也已写入相同的 description、homepage 和关键词，保持项目信息一致。
+package.json、README.md 与本文件使用同一 Description、Website 和关键词。
