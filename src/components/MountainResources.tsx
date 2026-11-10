@@ -5,8 +5,8 @@ import { mountainRituals } from '../data/mountainRituals';
 const categories = ['全部', '植物', '矿物', '动物', '其他'] as const;
 const chapters = ['全部', '南山经', '西山经', '北山经', '东山经', '中山经'] as const;
 
-export default function MountainResources() {
-  const [view, setView] = useState<'resources' | 'rituals'>('resources');
+export default function MountainResources({ initialView = 'resources' }: { initialView?: 'resources' | 'rituals' }) {
+  const [view, setView] = useState<'resources' | 'rituals'>(initialView);
   const [query, setQuery] = useState('');
   const [category, setCategory] = useState<'全部' | ResourceCategory>('全部');
   const [chapter, setChapter] = useState<(typeof chapters)[number]>('全部');
