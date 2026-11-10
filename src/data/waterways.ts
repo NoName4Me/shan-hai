@@ -53,5 +53,15 @@ export const waterways: WaterwayEntry[] = [
   {id:'kuang-shui',name:'贶水',chapterName:'中山经',mountainId:'central-jing-11-01',mountainName:'翼望之山',relation:'发源',flowDirection:'东南流',destination:'汉',recordText:'贶水出翼望之山，东南流注于汉，其中多蛟。',sourceUrl:central},
   {id:'ming-shui',name:'明水',chapterName:'中山经',mountainId:'central-ku-7-06',mountainName:'放皋之山',relation:'发源',flowDirection:'南流',destination:'伊水',recordText:'明水出放皋之山，南流注于伊水。',sourceUrl:central},
   {id:'xiu-shui',name:'休水',chapterName:'中山经',mountainId:'central-ku-7-09',mountainName:'少室之山',relation:'发源',flowDirection:'北流',destination:'洛',recordText:'休水出少室之山，北流注于洛。',sourceUrl:central},
-  {id:'huang-suan-shui',name:'黄酸之水',chapterName:'中山经',mountainId:'central-bo-5-14',mountainName:'升山',relation:'发源',flowDirection:'北流',destination:'河',recordText:'黄酸之水出升山，北流注于河。',sourceUrl:central}
+  {id:'huang-suan-shui',name:'黄酸之水',chapterName:'中山经',mountainId:'central-bo-5-14',mountainName:'升山',relation:'发源',flowDirection:'北流',destination:'河',recordText:'黄酸之水出升山，北流注于河。',sourceUrl:central},
+  {id:'hu-shui-east',name:'湖水',chapterName:'东山经',mountainId:'east-lei',mountainName:'藟山',relation:'发源',flowDirection:'东流',destination:'食水',recordText:'湖水出藟山，东流注于食水。',sourceUrl:east},
+  {id:'gua-shui-east',name:'挂水',chapterName:'东山经',mountainId:'east-xunzhuang',mountainName:'栒状之山',relation:'发源',flowDirection:'北流',destination:'湖水',recordText:'挂水出栒状之山，北流注于湖水。',sourceUrl:east},
+  {id:'jian-shui-east',name:'减水',chapterName:'东山经',mountainId:'east-fantiao',mountainName:'番条之山',relation:'发源',flowDirection:'北流',destination:'海',recordText:'减水出番条之山，北流注于海。',sourceUrl:east},
+  {id:'gu-er-shui',name:'姑儿之水',chapterName:'东山经',mountainId:'east-gu-er',mountainName:'姑儿之山',relation:'发源',flowDirection:'北流',destination:'海',recordText:'姑儿之水出姑儿之山，北流注于海。',sourceUrl:east},
+  {id:'zhu-sheng-shui',name:'诸绳之水',chapterName:'东山经',mountainId:'east-gaoshi',mountainName:'高氏之山',relation:'发源',flowDirection:'东流',destination:'泽',recordText:'诸绳之水出高氏之山，东流注于泽。',sourceUrl:east},
+  {id:'luo-shui-east',name:'泺水',chapterName:'东山经',mountainId:'east-yue',mountainName:'岳山',relation:'发源',flowDirection:'东流',destination:'泽',recordText:'泺水出岳山，东流注于泽。',sourceUrl:east},
+  {id:'mo-tu-shui',name:'末涂之水',chapterName:'东山经',mountainId:'east-du',mountainName:'独山',relation:'发源',flowDirection:'东流',destination:'沔',recordText:'末涂之水出独山，东流注于沔。',sourceUrl:east},
+  {id:'huan-shui-east',name:'环水',chapterName:'东山经',mountainId:'east-tai',mountainName:'泰山',relation:'发源',flowDirection:'东流',destination:'江',recordText:'环水出泰山，东流注于江，其中多水玉。',sourceUrl:east},
+  {id:'ji-shui-east',name:'激水',chapterName:'东山经',mountainId:'east-zhu',mountainName:'竹山',relation:'发源',flowDirection:'东流',destination:'娶檀之水',recordText:'激水出竹山，东流注于娶檀之水。',sourceUrl:east},
+  {id:'shi-shui-east',name:'食水',chapterName:'东山经',mountainId:'east-shuxu',mountainName:'樕𧑤之山',relation:'发源',flowDirection:'东北流',destination:'海',recordText:'食水出樕𧑤之山，东北流注于海。',sourceUrl:east}
 ];
