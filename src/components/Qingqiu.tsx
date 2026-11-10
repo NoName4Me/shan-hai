@@ -144,7 +144,7 @@ function Water() {
 export default function Qingqiu() {
   const toggleInfo=useAppStore((s)=>s.toggleInfo);
   return <Canvas shadows dpr={[1,1.7]} camera={{position:[19,12,25],fov:44,near:.1,far:260}}
-    gl={{antialias:true,alpha:true,powerPreference:'high-performance'}}>
+    gl={{antialias:true,alpha:true,powerPreference:'default',failIfMajorPerformanceCaveat:false}}>
     <color attach="background" args={['#96b8b5']}/>
     <fog attach="fog" args={['#96b8b5',35,116]}/>
     <ambientLight intensity={1.35} color="#e5eee2"/>

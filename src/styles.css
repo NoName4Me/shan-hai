@@ -27,3 +27,26 @@ h1,h2,p{margin-top:0}.atlas-hero h1,.world-heading h1{font-family:"Noto Serif SC
 @keyframes pulse{0%,100%{box-shadow:0 0 0 7px rgba(221,191,140,.07)}50%{box-shadow:0 0 0 13px rgba(221,191,140,.03)}}
 @media(max-width:700px){.site-header{height:78px;padding:0 22px}.brand-symbol{height:34px;width:34px;font-size:18px}.brand-name{font-size:15px}.brand-name small{font-size:7px}.edition,.header-menu{display:none}.atlas-section{height:100svh;min-height:700px}.atlas-hero{top:123px;left:27px}.atlas-hero h1{font-size:55px}.atlas-hero p{font-size:12px}.hero-cta{margin-top:23px}.hero-cta>span{display:none}.atlas-topline{display:none}.world-map{left:-25%;width:170%;opacity:.76}.map-points{left:-25%;width:170%}.map-point-label b{font-size:12px}.map-point-label small{font-size:8px}.map-pin{width:22px;height:22px}.map-point.available .map-pin{width:30px;height:30px}.map-legend{bottom:72px;left:24px;right:auto;font-size:10px}.site-footer{padding:18px 22px}.site-footer span:last-child{display:none}.world-heading{top:137px;left:25px}.world-heading h1{font-size:54px}.world-heading p{font-size:12px}.world-guide{bottom:105px;left:25px;right:25px;line-height:1.9}.world-info-button{bottom:31px;right:25px}.info-panel{top:auto;bottom:99px;left:20px;right:20px;transform:none;max-width:none;padding:26px}.header-back{font-size:11px;padding:9px 12px}}
 @media(prefers-reduced-motion:reduce){.map-point.available .map-pin{animation:none}*,*::before,*::after{scroll-behavior:auto!important}}
+
+/* WebGL 不可用时保持青丘可访问；二维场景不创建 GPU 上下文。 */
+.webgl-stage{position:relative;width:100%;height:100%;min-height:100svh}
+.webgl-loading{position:absolute;top:52%;left:50%;transform:translate(-50%,-50%);color:#fff0d8;font:14px "Noto Serif SC",serif;letter-spacing:.18em}
+.qingqiu-fallback{position:absolute;inset:0;overflow:hidden;background:#537e79}
+.fallback-landscape{display:block;width:100%;height:100%;opacity:.94}
+.webgl-fallback-panel{position:absolute;z-index:4;right:clamp(20px,7vw,110px);top:50%;transform:translateY(-28%);width:min(420px,calc(100vw - 40px));background:rgba(9,38,43,.9);border:1px solid rgba(240,218,175,.43);padding:28px 30px;backdrop-filter:blur(12px);box-shadow:0 15px 60px rgba(0,0,0,.12);color:#eee8d5}
+.webgl-fallback-kicker{font-size:10px;letter-spacing:.17em;color:#d9bd8d}
+.webgl-fallback-panel h2{font:500 24px "Noto Serif SC",serif;letter-spacing:.1em;margin:13px 0 12px}
+.webgl-fallback-panel p{font-size:13px;line-height:1.85;color:#c8d7cf}
+.webgl-fallback-panel .webgl-fallback-detail{font-size:11px;color:#b6c7c0;line-height:1.9;margin-bottom:19px}
+.webgl-fallback-panel code{font:12px monospace;color:#e4d4ac}
+.webgl-fallback-actions{display:flex;gap:11px;flex-wrap:wrap}
+.webgl-fallback-actions button{background:#d9be92;border:1px solid #d9be92;color:#183b3e;padding:10px 14px;font-size:12px}
+.webgl-fallback-actions button.secondary{background:transparent;color:#eadcc4;border:1px solid rgba(231,211,167,.5)}
+@media(max-width:700px){
+  .webgl-fallback-panel{left:20px;right:20px;top:auto;bottom:115px;transform:none;width:auto;padding:20px 22px}
+  .webgl-fallback-panel h2{font-size:20px}
+  .webgl-fallback-panel p{font-size:11px}
+  .webgl-fallback-panel .webgl-fallback-detail{font-size:10px}
+  .webgl-fallback-actions button{font-size:11px}
+  .qingqiu-fallback .fallback-landscape{width:175%;max-width:none;transform:translateX(-30%)}
+}

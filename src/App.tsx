@@ -1,7 +1,7 @@
 import { useEffect, useRef } from 'react';
 import gsap from 'gsap';
 import Atlas from './components/Atlas';
-import Qingqiu from './components/Qingqiu';
+import WebGLGuard from './components/WebGLGuard';
 import { useAppStore } from './store';
 
 function App() {
@@ -35,7 +35,7 @@ function App() {
         <Atlas/>
         <footer className="site-footer"><span>卷帙十八 · 世界尚在生成</span><span>MYTHICAL RECONSTRUCTION / NOT A HISTORICAL MAP</span></footer>
       </> : <>
-        <div className="world-canvas"><Qingqiu/></div>
+        <div className="world-canvas"><WebGLGuard/></div>
         <div className="world-vignette" aria-hidden="true"/>
         <div className="world-heading">
           <div className="eyebrow"><span className="eyebrow-line"/> THE FIRST REALM · SOUTHERN MOUNTAINS</div>
