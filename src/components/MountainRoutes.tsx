@@ -2,8 +2,9 @@ import { useState } from 'react';
 import { mountainRoutes } from '../data/mountainRoutes';
 import { bestiary } from '../data/bestiary';
 import { waterways } from '../data/waterways';
+import { mountainResources } from '../data/mountainResources';
 
-export default function MountainRoutes({ onOpenBestiary }: { onOpenBestiary: () => void }) {
+export default function MountainRoutes({ onOpenBestiary, onOpenResources, onOpenWaterways }: { onOpenBestiary: () => void; onOpenResources: () => void; onOpenWaterways: () => void }) {
   const [routeId, setRouteId] = useState(mountainRoutes[0].id);
   const route = mountainRoutes.find((item) => item.id === routeId) ?? mountainRoutes[0];
   const [selectedNodeId, setSelectedNodeId] = useState(route.nodes[0].id);
@@ -12,6 +13,7 @@ export default function MountainRoutes({ onOpenBestiary }: { onOpenBestiary: () 
   const recordedSum = route.nodes.reduce((sum, node) => sum + (node.distanceLi ?? 0), 0);
   const mountainCount = route.nodes.filter((node) => node.kind !== '路段').length;
   const relatedRivers = waterways.filter((river) => river.mountainId === selectedNode.id);
+  const relatedResources = mountainResources.filter((resource) => resource.mountainId === selectedNode.id);
 
   const selectRoute = (nextId: string) => {
     const nextRoute = mountainRoutes.find((item) => item.id === nextId);
@@ -67,7 +69,8 @@ export default function MountainRoutes({ onOpenBestiary }: { onOpenBestiary: () 
             ? '由前一山向' + selectedNode.direction + '行进 ' + selectedNode.distanceLi + ' 里'
             : selectedNode.kind === '路段' ? '原文记载的水行、流沙或其他特殊路段。' : '本段路线的起始山名，原文未在此节点前标注里程。')}</p>
           {selectedNode.resourceSummary && <div className="route-resource-summary"><small>原文物产 / 地理记录</small><p>{selectedNode.resourceSummary}</p></div>}
-          {relatedRivers.length > 0 && <div className="route-creatures"><small>此山发源水系</small><div>{relatedRivers.map((river) => <span key={river.id}>{river.name}</span>)}</div></div>}
+          {relatedRivers.length > 0 && <div className="route-creatures"><small>此山关联水系</small><div>{relatedRivers.map((river) => <span key={river.id}>{river.name}</span>)}</div><button onClick={onOpenWaterways}>查看水系图谱 ↗</button></div>}
+          {relatedResources.length > 0 && <div className="route-creatures"><small>此山物产索引</small><div>{relatedResources.map((resource) => <span key={resource.id}>{resource.name}</span>)}</div><button onClick={onOpenResources}>查看山产志 ↗</button></div>}
           {relatedCreatures.length > 0 ? (
             <div className="route-creatures">
               <small>此山相关异兽</small>
