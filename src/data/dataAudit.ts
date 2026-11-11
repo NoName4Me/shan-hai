@@ -48,6 +48,9 @@ export const dataAudit = {
   duplicateDahuangIds: dahuangEntities.map((item) => item.id).filter((id, index, all) => all.indexOf(id) !== index),
   orphanDahuangRelations: dahuangRelations.filter((item) => !dahuangEntities.some((entity) => entity.id === item.fromId) || !dahuangEntities.some((entity) => entity.id === item.toId)).map((item) => item.id),
   missingDahuangSources: dahuangEntities.filter((item) => !item.sourceUrl.startsWith('https://')).map((item) => item.id),
+  emptyDahuangEntityQuotes: dahuangEntities.filter((item) => !item.quote.trim()).map((item) => item.id),
+  emptyDahuangRelationQuotes: dahuangRelations.filter((item) => !item.quote.trim()).map((item) => item.id),
+  duplicateDahuangRelationIds: dahuangRelations.map((item) => item.id).filter((id, index, all) => all.indexOf(id) !== index),
   graphNodeCount: knowledgeNodes.length,
   graphEdgeCount: knowledgeEdges.length
 };
@@ -68,5 +71,8 @@ export const dataAuditIssues = [
   ...dataAudit.duplicateDahuangIds.map((id) => '大荒经实体 ID 重复：' + id),
   ...dataAudit.orphanDahuangRelations.map((id) => '大荒经关系缺少实体端点：' + id),
   ...dataAudit.missingDahuangSources.map((id) => '大荒经实体缺少原文链接：' + id),
+  ...dataAudit.emptyDahuangEntityQuotes.map((id) => '大荒经实体缺少原文摘录：' + id),
+  ...dataAudit.emptyDahuangRelationQuotes.map((id) => '大荒经关系缺少原文依据：' + id),
+  ...dataAudit.duplicateDahuangRelationIds.map((id) => '大荒经关系 ID 重复：' + id),
   ...dataAudit.missingSourceUrls.map((id) => '缺少有效原文链接：' + id)
 ];
