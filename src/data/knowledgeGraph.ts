@@ -4,8 +4,9 @@ import { mountainResources } from './mountainResources';
 import { bestiary } from './bestiary';
 import { mountainRituals } from './mountainRituals';
 import { chapters, locations } from '../atlas';
+import { overseasEntities, overseasRelations, type OverseasKind } from './overseasEntities';
 
-export type KnowledgeKind = '山' | '水' | '物产' | '异兽' | '祀典' | '神形' | '古国' | '神祇' | '神话意象' | '篇章';
+export type KnowledgeKind = '山' | '水' | '物产' | '异兽' | '祀典' | '神形' | '古国' | '神祇' | '神话意象' | '篇章' | OverseasKind;
 export type KnowledgeNode = {
   id: string;
   label: string;
@@ -152,7 +153,7 @@ for (const item of bestiary) {
 
 const seaLocationKinds: Record<string, KnowledgeKind> = {
   'qingqiu-country': '古国',
-  'fusang': '神话意象',
+  'fusang': '神木',
   'kunlun': '山',
   'zhongshan': '山',
   'buzhou': '山'
@@ -190,8 +191,6 @@ for (const place of locations.filter((item) => !['nanshan-jing', 'xishan-jing', 
 }
 
 const seaMythicLinks = [
-  { placeId: 'zhongshan', id: 'zhuyin', label: '烛阴', relation: '山神名曰', chapterId: 'haiwai-bei-jing', chapterName: '海外北经', quote: '锺山之神名曰烛阴……居锺山下。', sourceUrl: 'https://zh.wikisource.org/zh-hans/山海經/海外北經' },
-  { placeId: 'fusang', id: 'ten-suns', label: '十日', relation: '十日所浴', chapterId: 'haiwai-dong-jing', chapterName: '海外东经', quote: '汤谷上有扶桑，十日所浴。', sourceUrl: 'https://zh.wikisource.org/zh-hans/山海經/海外東經' },
   { placeId: 'kunlun', id: 'lower-capital', label: '帝之下都', relation: '原文称为', chapterId: 'hainei-xi-jing', chapterName: '海内西经', quote: '海内昆仑之虚，在西北，帝之下都。', sourceUrl: 'https://zh.wikisource.org/zh-hans/山海經/海內西經' }
 ];
 for (const item of seaMythicLinks) {
@@ -199,7 +198,7 @@ for (const item of seaMythicLinks) {
   addNode({
     id: nodeId,
     label: item.label,
-    kind: item.id === 'zhuyin' ? '神祇' : '神话意象',
+    kind: '神话意象',
     chapterName: item.chapterName,
     description: item.relation + ' ' + item.placeId,
     sourceUrl: item.sourceUrl,
@@ -213,6 +212,46 @@ for (const item of seaMythicLinks) {
     chapterName: item.chapterName,
     sourceUrl: item.sourceUrl,
     sourceText: item.quote
+  });
+}
+
+const overseasGraphIds = new Map<string, string>();
+const overseasById = new Map(overseasEntities.map((item) => [item.id, item]));
+for (const item of overseasEntities) {
+  const nodeId = item.graphId ?? 'overseas:' + item.id;
+  overseasGraphIds.set(item.id, nodeId);
+  addNode({
+    id: nodeId,
+    label: item.name,
+    kind: item.kind,
+    chapterName: item.chapterName,
+    description: item.description + (item.note ? ' · ' + item.note : ''),
+    sourceUrl: item.sourceUrl,
+    sourceText: item.quote
+  });
+  addEdge({
+    id: 'overseas-chapter:' + item.id,
+    from: 'chapter:' + item.chapterId,
+    to: nodeId,
+    relation: '本篇记载',
+    chapterName: item.chapterName,
+    sourceUrl: item.sourceUrl,
+    sourceText: item.quote
+  });
+}
+for (const relation of overseasRelations) {
+  const from = overseasGraphIds.get(relation.fromId);
+  const to = overseasGraphIds.get(relation.toId);
+  const source = overseasById.get(relation.fromId);
+  if (!from || !to || !source) continue;
+  addEdge({
+    id: 'overseas-relation:' + relation.id,
+    from,
+    to,
+    relation: relation.relation,
+    chapterName: source.chapterName,
+    sourceUrl: source.sourceUrl,
+    sourceText: relation.quote
   });
 }
 
@@ -261,7 +300,7 @@ for (const item of mountainRituals) {
 
 export const knowledgeNodes = [...nodes.values()];
 export const knowledgeEdges = [...edges.values()];
-export const knowledgeKinds: KnowledgeKind[] = ['山', '水', '异兽', '物产', '祀典', '神形', '古国', '神祇', '神话意象', '篇章'];
+export const knowledgeKinds: KnowledgeKind[] = ['山', '水', '异兽', '异鸟', '物产', '古国', '异人', '人物', '神祇', '神话人物', '神木', '地理区域', '神话事件', '祀典', '神形', '神话意象', '篇章'];
 
 export function getKnowledgeNeighbors(nodeId: string) {
   return knowledgeEdges
