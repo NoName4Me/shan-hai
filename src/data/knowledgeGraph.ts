@@ -7,6 +7,7 @@ import { chapters, locations } from '../atlas';
 import { overseasEntities, overseasRelations, type OverseasKind } from './overseasEntities';
 import { inlandEntities, inlandRelations, inlandChapterNotes } from './inlandEntities';
 import { dahuangEntities, dahuangRelations, dahuangChapterNotes } from './dahuangEntities';
+import { haineiClassicEntities, haineiClassicRelations, haineiClassicCrossLinks, haineiClassicChapterNote } from './haineiClassicEntities';
 
 export type KnowledgeKind = '山' | '水' | '物产' | '异兽' | '祀典' | '神形' | '古国' | '神祇' | '神话意象' | '篇章' | OverseasKind;
 export type KnowledgeNode = {
@@ -367,6 +368,68 @@ for (const relation of dahuangRelations) {
     chapterName: source.chapterName,
     sourceUrl: source.sourceUrl,
     sourceText: relation.quote
+  });
+}
+
+const haineiClassicGraphIds = new Map<string, string>();
+const haineiClassicById = new Map(haineiClassicEntities.map((item) => [item.id, item]));
+const haineiClassicChapter = chapters.find((item) => item.id === 'hainei-jing');
+addNode({
+  id: 'chapter:hainei-jing',
+  label: haineiClassicChapter?.name ?? '海内经',
+  kind: '篇章',
+  chapterName: '海内经',
+  description: [haineiClassicChapter?.summary, haineiClassicChapterNote].filter(Boolean).join(' · ')
+});
+for (const item of haineiClassicEntities) {
+  const nodeId = item.graphId ?? 'hainei-classic:' + item.id;
+  haineiClassicGraphIds.set(item.id, nodeId);
+  addNode({
+    id: nodeId,
+    label: item.name,
+    kind: item.kind,
+    chapterName: item.chapterName,
+    description: item.description + (item.note ? ' · ' + item.note : ''),
+    sourceUrl: item.sourceUrl,
+    sourceText: item.quote
+  });
+  addEdge({
+    id: 'hainei-classic-chapter:' + item.id,
+    from: 'chapter:hainei-jing',
+    to: nodeId,
+    relation: '本篇记载',
+    chapterName: item.chapterName,
+    sourceUrl: item.sourceUrl,
+    sourceText: item.quote
+  });
+}
+for (const relation of haineiClassicRelations) {
+  const from = haineiClassicGraphIds.get(relation.fromId);
+  const to = haineiClassicGraphIds.get(relation.toId);
+  const source = haineiClassicById.get(relation.fromId);
+  if (!from || !to || !source) continue;
+  addEdge({
+    id: 'hainei-classic-relation:' + relation.id,
+    from,
+    to,
+    relation: relation.relation,
+    chapterName: source.chapterName,
+    sourceUrl: source.sourceUrl,
+    sourceText: relation.quote
+  });
+}
+for (const link of haineiClassicCrossLinks) {
+  const from = haineiClassicGraphIds.get(link.fromId);
+  const source = haineiClassicById.get(link.fromId);
+  if (!from || !source) continue;
+  addEdge({
+    id: 'hainei-classic-cross:' + link.id,
+    from,
+    to: link.toGraphId,
+    relation: link.relation,
+    chapterName: source.chapterName + ' ↔ ' + link.targetChapterName,
+    sourceUrl: source.sourceUrl,
+    sourceText: link.quote
   });
 }
 

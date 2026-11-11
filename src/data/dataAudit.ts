@@ -8,6 +8,7 @@ import { locations } from '../atlas';
 import { overseasEntities, overseasRelations } from './overseasEntities';
 import { inlandEntities, inlandRelations, inlandChapterNotes } from './inlandEntities';
 import { dahuangEntities, dahuangRelations, dahuangChapterNotes } from './dahuangEntities';
+import { haineiClassicEntities, haineiClassicRelations, haineiClassicCrossLinks } from './haineiClassicEntities';
 
 const mountainIds = mountainRoutes.flatMap((route) => route.nodes.map((node) => node.id));
 const routeIds = mountainRoutes.map((route) => route.id);
@@ -51,6 +52,18 @@ export const dataAudit = {
   emptyDahuangEntityQuotes: dahuangEntities.filter((item) => !item.quote.trim()).map((item) => item.id),
   emptyDahuangRelationQuotes: dahuangRelations.filter((item) => !item.quote.trim()).map((item) => item.id),
   duplicateDahuangRelationIds: dahuangRelations.map((item) => item.id).filter((id, index, all) => all.indexOf(id) !== index),
+  haineiClassicEntityCount: haineiClassicEntities.length,
+  haineiClassicRelationCount: haineiClassicRelations.length,
+  haineiClassicCrossVolumeLinkCount: haineiClassicCrossLinks.length,
+  duplicateHaineiClassicIds: haineiClassicEntities.map((item) => item.id).filter((id, index, all) => all.indexOf(id) !== index),
+  orphanHaineiClassicRelations: haineiClassicRelations.filter((item) => !haineiClassicEntities.some((entity) => entity.id === item.fromId) || !haineiClassicEntities.some((entity) => entity.id === item.toId)).map((item) => item.id),
+  missingHaineiClassicSources: haineiClassicEntities.filter((item) => !item.sourceUrl.startsWith('https://')).map((item) => item.id),
+  emptyHaineiClassicEntityQuotes: haineiClassicEntities.filter((item) => !item.quote.trim()).map((item) => item.id),
+  emptyHaineiClassicRelationQuotes: haineiClassicRelations.filter((item) => !item.quote.trim()).map((item) => item.id),
+  duplicateHaineiClassicRelationIds: haineiClassicRelations.map((item) => item.id).filter((id, index, all) => all.indexOf(id) !== index),
+  orphanHaineiClassicCrossLinks: haineiClassicCrossLinks.filter((item) => !haineiClassicEntities.some((entity) => entity.id === item.fromId) || !knowledgeNodes.some((node) => node.id === item.toGraphId)).map((item) => item.id),
+  duplicateHaineiClassicCrossLinkIds: haineiClassicCrossLinks.map((item) => item.id).filter((id, index, all) => all.indexOf(id) !== index),
+  missingHaineiClassicGraphTargets: haineiClassicEntities.filter((item) => item.graphId && !knowledgeNodes.some((node) => node.id === item.graphId)).map((item) => item.id),
   graphNodeCount: knowledgeNodes.length,
   graphEdgeCount: knowledgeEdges.length
 };
@@ -74,5 +87,14 @@ export const dataAuditIssues = [
   ...dataAudit.emptyDahuangEntityQuotes.map((id) => '大荒经实体缺少原文摘录：' + id),
   ...dataAudit.emptyDahuangRelationQuotes.map((id) => '大荒经关系缺少原文依据：' + id),
   ...dataAudit.duplicateDahuangRelationIds.map((id) => '大荒经关系 ID 重复：' + id),
+  ...dataAudit.duplicateHaineiClassicIds.map((id) => '海内经终篇实体 ID 重复：' + id),
+  ...dataAudit.orphanHaineiClassicRelations.map((id) => '海内经终篇关系缺少实体端点：' + id),
+  ...dataAudit.missingHaineiClassicSources.map((id) => '海内经终篇实体缺少原文链接：' + id),
+  ...dataAudit.emptyHaineiClassicEntityQuotes.map((id) => '海内经终篇实体缺少原文摘录：' + id),
+  ...dataAudit.emptyHaineiClassicRelationQuotes.map((id) => '海内经终篇关系缺少原文依据：' + id),
+  ...dataAudit.duplicateHaineiClassicRelationIds.map((id) => '海内经终篇关系 ID 重复：' + id),
+  ...dataAudit.orphanHaineiClassicCrossLinks.map((id) => '海内经终篇跨卷关系缺少端点：' + id),
+  ...dataAudit.duplicateHaineiClassicCrossLinkIds.map((id) => '海内经终篇跨卷关系 ID 重复：' + id),
+  ...dataAudit.missingHaineiClassicGraphTargets.map((id) => '海内经终篇共享实体目标不存在：' + id),
   ...dataAudit.missingSourceUrls.map((id) => '缺少有效原文链接：' + id)
 ];
