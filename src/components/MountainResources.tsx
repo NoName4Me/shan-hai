@@ -1,6 +1,7 @@
 import { useMemo, useState } from 'react';
 import { mountainResources, type ResourceCategory } from '../data/mountainResources';
 import { mountainRituals } from '../data/mountainRituals';
+import { getRitualFacets } from '../data/ritualFacets';
 
 const categories = ['全部', '植物', '矿物', '动物', '其他'] as const;
 const chapters = ['全部', '南山经', '西山经', '北山经', '东山经', '中山经'] as const;
@@ -125,6 +126,7 @@ export default function MountainResources({ initialView = 'resources' }: { initi
                 <h3>{selectedRitual.sectionName}</h3>
                 <div className="bestiary-origin">{selectedRitual.deityDescription}</div>
                 <p>{selectedRitual.ritualText}</p>
+                <div className="ritual-facets"><small>祀典要素拆分（基于摘要，不等同逐字原文）</small><div>{getRitualFacets(selectedRitual).map((facet, index) => <section key={facet.kind + index}><b>{facet.kind}</b><span>{facet.text}</span></section>)}</div></div>
                 {selectedRitual.note && <p className="bestiary-note">{selectedRitual.note}</p>}
                 <a href={selectedRitual.sourceUrl} target="_blank" rel="noreferrer">查阅篇末祠礼原文 ↗</a>
               </aside>
