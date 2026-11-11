@@ -59,7 +59,7 @@ export const chapters: AtlasChapter[] = [
   { id: 'dahuang-nan-jing', volume: 15, name: '大荒南经', group: 'wilderness', summary: '以南方大荒为背景，记载神祇、古国、异兽和天地边远之境。' },
   { id: 'dahuang-xi-jing', volume: 16, name: '大荒西经', group: 'wilderness', summary: '记述西北海之外的大荒边隅、不周山及相关神话地理。' },
   { id: 'dahuang-bei-jing', volume: 17, name: '大荒北经', group: 'wilderness', summary: '铺展北方大荒的山泽、古国、神祇与极远之地。' },
-  { id: 'hainei-jing', volume: 18, name: '海内经', group: 'final', summary: '以综合性篇章收束全书，涉及海内外山川、族群、神话谱系与天地生成。' }
+  { id: 'hainei-jing', volume: 18, name: '海内经', group: 'final', summary: '以综合性篇章收束全书，串联海内外山川、古国族群、神祇谱系、技术起源与鲧禹治水叙事。' }
 ];
 
 export const locations: AtlasLocation[] = [
