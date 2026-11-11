@@ -3,7 +3,7 @@ import { waterways } from './waterways';
 import { mountainResources } from './mountainResources';
 import { bestiary } from './bestiary';
 import { mountainRituals } from './mountainRituals';
-import { knowledgeEdges, knowledgeNodes } from './knowledgeGraph';
+import { getAtlasLocationIdForKnowledgeNode, getKnowledgeNodeIdForAtlasLocation, knowledgeEdges, knowledgeNodes } from './knowledgeGraph';
 import { locations } from '../atlas';
 import { overseasEntities, overseasRelations } from './overseasEntities';
 import { inlandEntities, inlandRelations, inlandChapterNotes } from './inlandEntities';
@@ -32,6 +32,10 @@ export const dataAudit = {
     ...mountainRituals.filter((item) => !item.sourceUrl.startsWith('https://')).map((item) => 'ritual:' + item.id)
   ],
   seaLocationCount: locations.filter((item) => !['nanshan-jing', 'xishan-jing', 'beishan-jing', 'dongshan-jing', 'zhongshan-jing'].includes(item.chapterId)).length,
+  brokenAtlasGraphMappings: locations.filter((location) => {
+    const graphNodeId = getKnowledgeNodeIdForAtlasLocation(location.id);
+    return !graphNodeId || getAtlasLocationIdForKnowledgeNode(graphNodeId) !== location.id;
+  }).map((location) => location.id),
   overseasEntityCount: overseasEntities.length,
   overseasRelationCount: overseasRelations.length,
   duplicateOverseasIds: overseasEntities.map((item) => item.id).filter((id, index, all) => all.indexOf(id) !== index),
@@ -75,6 +79,7 @@ export const dataAuditIssues = [
   ...dataAudit.orphanCreatures.map((id) => '异兽未关联山节点：' + id),
   ...dataAudit.orphanRituals.map((id) => '祀典未关联路线：' + id),
   ...dataAudit.orphanGraphEdges.map((id) => '图谱边缺少端点：' + id),
+  ...dataAudit.brokenAtlasGraphMappings.map((id) => '舆图地点无法双向映射到知识图谱：' + id),
   ...dataAudit.duplicateOverseasIds.map((id) => '海经实体 ID 重复：' + id),
   ...dataAudit.orphanOverseasRelations.map((id) => '海经关系缺少实体端点：' + id),
   ...dataAudit.missingOverseasSources.map((id) => '海经实体缺少原文链接：' + id),
