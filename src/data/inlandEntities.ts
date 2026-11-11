@@ -139,6 +139,8 @@ export const inlandEntities: InlandEntity[] = [
   entity('hainei-xi-jing', 'in-west-three-blue-birds', '三青鸟', '异鸟', '位于西王母之南，为西王母取食。', '其南有三青鸟，为西王母取食。'),
 
   // 海内北经
+  entity('hainei-bei-jing', 'in-north-daze', '大泽', '水', '方圆百里，群鸟在此生息及蜕解；本篇校注提示可能与海内西经大泽段落存在移简关系。', '大泽方百里，群鸟所生及所解，在雁门北。', '同名水域按篇章分开，暂不与海内西经大泽合并。'),
+  entity('hainei-bei-jing', 'in-north-he-water', '河', '水', '河水出阳污之山与凌门之山。', '阳污之山，河出其中；凌门之山，河出其中。'),
   entity('hainei-bei-jing', 'in-north-dahangbo', '大行伯', '人物', '有人持戈；其东有犬封国，贰负之尸亦在其东。', '有人曰大行伯，把戈。其东有犬封国。'),
   entity('hainei-bei-jing', 'in-north-dog-country', '犬封国', '古国', '又称犬戎国，形状如犬；有女子跪进食。', '犬封国曰犬戎国，状如犬。'),
   entity('hainei-bei-jing', 'in-north-jiliang', '吉量', '异兽', '文马，缟身朱鬛、目若黄金；乘之寿千岁。', '有文马，缟身朱鬛，目若黄金，名曰吉量，乘之寿千岁。'),
@@ -200,7 +202,8 @@ export const inlandEntities: InlandEntity[] = [
   entity('hainei-dong-jing', 'in-east-three-kings', '三天子鄣山', '山', '淅江、庐江等水系的出山地名；与海内南经同名条目分开记录。', '淅江出三天子……庐江出三天子。', '同名山跨篇出现，暂不推定为同一地理实体。'),
   entity('hainei-dong-jing', 'in-east-lujiang', '庐江', '水', '出三天子鄣山，入江，位于彭泽之西。', '庐江出三天子，都入江，彭泽西。'),
   entity('hainei-dong-jing', 'in-east-pengze', '彭泽', '水', '庐江入江处的方位参照。', '庐江出三天子，都入江，彭泽西。'),
-  entity('hainei-dong-jing', 'in-east-huai', '淮水', '水', '出馀山，入海；另有淮浦等方位参照。', '淮水出馀山……入海。'),
+  entity('hainei-dong-jing', 'in-east-huai', '淮水', '水', '出馀山，入海；颍水、汝水等亦记为入淮。', '淮水出馀山……入海。'),
+  entity('hainei-dong-jing', 'in-east-jiang', '江', '水', '多条水道的注入对象；白水、沅水、濛水等均记入江。', '濛水出汉阳，西入江。白水出蜀，而东南注江。'),
   entity('hainei-dong-jing', 'in-east-yushan', '馀山', '山', '淮水的源出山地，位于朝阳东、义乡西。', '淮水出馀山，馀山在朝阳东，义乡西。'),
   entity('hainei-dong-jing', 'in-east-chaoyang', '朝阳', '地理区域', '馀山位于其东。', '馀山在朝阳东。'),
   entity('hainei-dong-jing', 'in-east-yixiang', '义乡', '地理区域', '馀山位于其西。', '馀山在朝阳东，义乡西。'),
@@ -285,11 +288,11 @@ export const inlandRelations: InlandRelation[] = [
   { id: 'inw-02', fromId: 'in-west-wei', toId: 'in-west-yaoyu', relation: '危参与杀窫窳', quote: '危与贰负杀窫窳。' },
   { id: 'inw-03', fromId: 'in-west-erfu', toId: 'in-west-yaoyu', relation: '贰负参与杀窫窳', quote: '危与贰负杀窫窳。' },
   { id: 'inw-04', fromId: 'in-west-shushu-mountain', toId: 'in-west-wei', relation: '危被拘系于疏属之山', quote: '帝乃梏之疏属之山。' },
-  { id: 'inw-05', fromId: 'in-west-daze', toId: 'in-west-yanmen', relation: '大泽在雁门北', quote: '大泽方百里……在雁门北。' },
-  { id: 'inw-06', fromId: 'in-west-yanmen', toId: 'in-west-gaoliu', relation: '雁门山在高柳北', quote: '雁门山……在高柳北。' },
-  { id: 'inw-07', fromId: 'in-west-gaoliu', toId: 'in-west-dai', relation: '高柳在代北', quote: '高柳在代北。' },
-  { id: 'inw-08', fromId: 'in-west-houji-burial', toId: 'in-west-di-country', relation: '后稷之葬在氐国西', quote: '后稷之葬……在氐国西。' },
-  { id: 'inw-09', fromId: 'in-west-liuhuang-country', toId: 'in-west-houji-burial', relation: '流黄酆氏之国在后稷葬西', quote: '在后稷葬西。' },
+  { id: 'inw-05', fromId: 'in-west-yanmen', toId: 'in-west-daze', relation: '大泽在雁门北', quote: '大泽方百里……在雁门北。' },
+  { id: 'inw-06', fromId: 'in-west-gaoliu', toId: 'in-west-yanmen', relation: '雁门山在高柳北', quote: '雁门山……在高柳北。' },
+  { id: 'inw-07', fromId: 'in-west-dai', toId: 'in-west-gaoliu', relation: '高柳在代北', quote: '高柳在代北。' },
+  { id: 'inw-08', fromId: 'in-west-di-country', toId: 'in-west-houji-burial', relation: '后稷之葬在氐国西', quote: '后稷之葬……在氐国西。' },
+  { id: 'inw-09', fromId: 'in-west-houji-burial', toId: 'in-west-liuhuang-country', relation: '流黄酆氏之国在后稷葬西', quote: '在后稷葬西。' },
   { id: 'inw-10', fromId: 'in-west-zhongshan', toId: 'in-west-liusha', relation: '流沙出钟山', quote: '流沙出锺山。' },
   { id: 'inw-11', fromId: 'in-west-liusha', toId: 'in-west-kunlun', relation: '流沙西行又南行昆仑之虚', quote: '流沙出锺山，西行又南行昆仑之虚。' },
   { id: 'inw-12', fromId: 'in-west-kunlun', toId: 'in-west-black-water', relation: '流沙西南入海黑水之山', quote: '西南入海黑水之山。' },
@@ -319,7 +322,7 @@ export const inlandRelations: InlandRelation[] = [
   { id: 'inw-36', fromId: 'in-west-witches', toId: 'in-west-yaoyu-corpse', relation: '六巫夹窫窳之尸', quote: '皆夹窫窳之尸，皆操不死之药以距之。' },
   { id: 'inw-37', fromId: 'in-west-fuchang-tree', toId: 'in-west-langgan-tree', relation: '服常树上三头人伺琅玕树', quote: '服常树，其上有三头人，伺琅玕树。' },
   { id: 'inw-38', fromId: 'in-west-kai-ming', toId: 'in-west-tree-bird', relation: '树鸟在开明南', quote: '开明南有树鸟，六首。' },
-  { id: 'inw-39', fromId: 'in-west-snake-witch-mountain', toId: 'in-west-xiwangmu', relation: '篇章接续，西王母在昆仑虚北', quote: '西王母……在昆仑虚北。' },
+  { id: 'inw-39', fromId: 'in-west-kunlun', toId: 'in-west-xiwangmu', relation: '西王母在昆仑虚北', quote: '西王母……在昆仑虚北。' },
   { id: 'inw-40', fromId: 'in-west-xiwangmu', toId: 'in-west-three-blue-birds', relation: '三青鸟为西王母取食', quote: '其南有三青鸟，为西王母取食。' },
 
   // 海内北经
@@ -383,5 +386,12 @@ export const inlandRelations: InlandRelation[] = [
   { id: 'ine-39', fromId: 'in-east-hutu-water', toId: 'in-east-bohai', relation: '虖沱水注渤海', quote: '虖沱水……东注渤海。' },
   { id: 'ine-40', fromId: 'in-east-zhang-water', toId: 'in-east-bohai', relation: '漳水注渤海', quote: '漳水……东注渤海。' },
   { id: 'ine-41', fromId: 'in-east-liegushe', toId: 'in-east-gushe-country', relation: '姑射国属列姑射', quote: '姑射国在海中，属列姑射。' },
-  { id: 'ine-42', fromId: 'in-east-duzhou', toId: 'in-east-giant-market', relation: '同属海中条目，非直接邻接', quote: '大人之市在海中。' }
+  { id: 'ine-42', fromId: 'in-east-donghai', toId: 'in-east-giant-market', relation: '同为海中条目（非直接邻接）', quote: '大人之市在海中。' },
+{ id: 'ine-43', fromId: 'in-east-meng-water', toId: 'in-east-jiang', relation: '濛水西入江', quote: '濛水出汉阳，西入江。' },
+  { id: 'ine-44', fromId: 'in-east-bai-water', toId: 'in-east-jiang', relation: '白水东南注江', quote: '白水出蜀，而东南注江。' },
+  { id: 'ine-45', fromId: 'in-east-yuan-water', toId: 'in-east-jiang', relation: '沅水东注江', quote: '沅水出象郡……入东注江。' },
+  { id: 'ine-46', fromId: 'in-east-lujiang', toId: 'in-east-jiang', relation: '庐江入江', quote: '庐江出三天子，都入江。' },
+  { id: 'ine-47', fromId: 'in-east-ying-water', toId: 'in-east-huai', relation: '颍水南入淮', quote: '颍水出少室……南入淮。' },
+  { id: 'ine-48', fromId: 'in-east-ru-water', toId: 'in-east-huai', relation: '汝水西南入淮', quote: '汝水出天息山……西南入淮。' },
+  { id: 'ine-49', fromId: 'in-east-wei-water', toId: 'in-east-he-water', relation: '渭水东注河', quote: '渭水出乌鼠同穴山，东注河。' }
 ];
