@@ -1,6 +1,6 @@
 export type OverseasKind =
   | '古国' | '异人' | '人物' | '神祇' | '异兽' | '异鸟'
-  | '山' | '水' | '神木' | '地理区域' | '神话事件' | '神话人物' | '物产';
+  | '山' | '水' | '神木' | '地理区域' | '神话事件' | '神话人物' | '神话意象' | '物产';
 
 export type OverseasChapterId =
   | 'haiwai-nan-jing' | 'haiwai-xi-jing' | 'haiwai-bei-jing' | 'haiwai-dong-jing';
