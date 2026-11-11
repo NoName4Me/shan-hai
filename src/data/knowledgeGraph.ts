@@ -215,6 +215,17 @@ for (const item of seaMythicLinks) {
   });
 }
 
+for (const chapterId of new Set(overseasEntities.map((item) => item.chapterId))) {
+  const chapter = chapters.find((item) => item.id === chapterId);
+  addNode({
+    id: 'chapter:' + chapterId,
+    label: chapter?.name ?? chapterId,
+    kind: '篇章',
+    chapterName: chapter?.name ?? chapterId,
+    description: chapter?.summary ?? '《山海经》篇章索引'
+  });
+}
+
 const overseasGraphIds = new Map<string, string>();
 const overseasById = new Map(overseasEntities.map((item) => [item.id, item]));
 for (const item of overseasEntities) {
