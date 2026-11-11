@@ -373,3 +373,13 @@ h1,h2,p{margin-top:0}.atlas-hero h1,.world-heading h1{font-family:"Noto Serif SC
  .graph-neighbor-list{max-height:230px}
  .graph-stats{gap:10px}
 }
+
+.ritual-facets{margin:16px 0;padding:12px;border:1px solid rgba(196,207,187,.14);background:rgba(5,27,32,.28)}
+.ritual-facets>small{display:block;margin-bottom:9px;color:#9eb2a4;font-size:9px}
+.ritual-facets>div{display:grid;gap:6px}
+.ritual-facets section{display:grid;grid-template-columns:64px 1fr;gap:10px;padding:7px 0;border-bottom:1px solid rgba(196,207,187,.08)}
+.ritual-facets section:last-child{border-bottom:0}
+.ritual-facets b{font:10px "Noto Serif SC",serif;color:#d6bd91}
+.ritual-facets section span{font:10px/1.7 "Noto Serif SC",serif;color:#bdc8b9}
+.graph-audit-ok{color:#a9c5a6!important}
+.graph-audit-warning{color:#e0a68b!important}
