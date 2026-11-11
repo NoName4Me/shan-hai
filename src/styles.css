@@ -326,3 +326,50 @@ h1,h2,p{margin-top:0}.atlas-hero h1,.world-heading h1{font-family:"Noto Serif SC
 }
 
 .route-ritual-preview p{margin:9px 0 0;font:10px/1.8 "Noto Serif SC",serif;color:#b9c7b9}
+
+
+/* V0.5 · 关系图谱 */
+.graph-toolbar{display:flex;gap:12px;align-items:center;justify-content:space-between;margin:22px 0 12px;flex-wrap:wrap}
+.graph-toolbar .bestiary-search{flex:1;min-width:230px;max-width:480px}
+.graph-toolbar .bestiary-kind-filters{flex-wrap:wrap}
+.graph-search-results{display:flex;flex-wrap:wrap;gap:6px;margin:0 0 12px;padding:10px;border:1px solid rgba(196,207,187,.14);background:rgba(5,27,32,.4)}
+.graph-search-results button{display:flex;align-items:center;gap:7px;padding:7px 9px;border:1px solid rgba(196,207,187,.14);background:rgba(12,43,47,.6);color:#e3e0d2;font:10px "Noto Serif SC",serif}
+.graph-search-results button small{color:#8ea79a;font:9px Inter,sans-serif}
+.graph-search-results i,.graph-legend i,.graph-neighbor-list i{display:inline-block;width:7px;height:7px;border-radius:50%;flex:none}
+.graph-layout{display:grid;grid-template-columns:minmax(0,1.4fr) minmax(280px,.6fr);gap:13px;align-items:stretch}
+.graph-canvas-wrap,.graph-detail{border:1px solid rgba(196,207,187,.17);background:rgba(5,27,32,.55);min-width:0}
+.graph-canvas-label{display:flex;justify-content:space-between;gap:10px;padding:12px 15px;border-bottom:1px solid rgba(196,207,187,.12);font:11px "Noto Serif SC",serif;color:#e1d6bf;letter-spacing:.1em}
+.graph-canvas-label small{font:9px Inter,sans-serif;color:#8fa89b;letter-spacing:0}
+.knowledge-graph-svg{display:block;width:100%;height:auto;min-height:390px;max-height:540px}
+.graph-edge-label{font:9px "Noto Serif SC",serif;fill:#b7c7b7;paint-order:stroke;stroke:#09272c;stroke-width:4px;stroke-linejoin:round}
+.graph-node{cursor:pointer;outline:none}
+.graph-node:focus circle:first-child{stroke:#fff2d4;stroke-width:3}
+.graph-node-label{font:11px "Noto Serif SC",serif;fill:#f0eadb;pointer-events:none}
+.graph-node-kind{font:9px Inter,sans-serif;fill:#b7c7b8;pointer-events:none}
+.graph-legend{display:flex;gap:14px;flex-wrap:wrap;padding:10px 14px;border-top:1px solid rgba(196,207,187,.1)}
+.graph-legend span{display:flex;align-items:center;gap:6px;font-size:9px;color:#aebdb0}
+.graph-detail{padding:20px;display:flex;flex-direction:column;min-height:420px}
+.graph-detail h3{font:500 24px "Noto Serif SC",serif;letter-spacing:.1em;color:#f0e5ce;margin:15px 0 8px}
+.graph-detail>p{font:11px/1.8 "Noto Serif SC",serif;color:#b6c7b9;margin:0 0 18px}
+.graph-neighbor-heading{display:flex;justify-content:space-between;padding:11px 0;border-top:1px solid rgba(196,207,187,.13);font:11px "Noto Serif SC",serif;color:#e3d4b8}
+.graph-neighbor-heading small{color:#a6b9aa}
+.graph-neighbor-list{display:flex;flex-direction:column;max-height:260px;overflow-y:auto;scrollbar-width:thin;scrollbar-color:rgba(216,190,145,.4) transparent}
+.graph-neighbor-list button{display:flex;justify-content:space-between;gap:8px;align-items:center;padding:9px 2px;border:0;border-bottom:1px solid rgba(196,207,187,.08);background:transparent;color:#e0e2d4;text-align:left}
+.graph-neighbor-list button>span{display:flex;align-items:center;gap:8px;font:11px "Noto Serif SC",serif}
+.graph-neighbor-list button small{font-size:9px;color:#91a99d;text-align:right}
+.graph-neighbor-list p{font-size:10px;color:#8ea69a}
+.graph-detail blockquote{margin:14px 0;padding:10px 0 10px 12px;border-left:2px solid #d6b989;color:#e4d8c1;font:10px/1.8 "Noto Serif SC",serif}
+.graph-detail>a{font-size:10px;color:#dfc49a;margin-top:4px}
+.graph-reset{margin-top:auto;align-self:flex-start;padding:8px 10px;border:1px solid rgba(216,190,145,.4);background:transparent;color:#d9c29d;font-size:9px}
+.graph-stats{display:flex;gap:18px;flex-wrap:wrap;margin-top:12px;color:#a1b4a5;font-size:9px;letter-spacing:.05em}
+@media(max-width:760px){
+ .graph-layout{grid-template-columns:1fr}
+ .graph-toolbar{align-items:stretch}
+ .graph-toolbar .bestiary-search{max-width:none}
+ .graph-toolbar .bestiary-kind-filters{overflow-x:auto;flex-wrap:nowrap}
+ .graph-toolbar .bestiary-kind-filters button{flex:none}
+ .knowledge-graph-svg{min-height:0}
+ .graph-detail{min-height:0;padding:16px}
+ .graph-neighbor-list{max-height:230px}
+ .graph-stats{gap:10px}
+}
