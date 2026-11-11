@@ -4,10 +4,11 @@ import Bestiary from './Bestiary';
 import MountainRoutes from './MountainRoutes';
 import Waterways from './Waterways';
 import MountainResources from './MountainResources';
+import KnowledgeGraph from './KnowledgeGraph';
 import { useAppStore } from '../store';
 
 export default function Atlas() {
-  const [atlasMode, setAtlasMode] = useState<'map' | 'routes' | 'bestiary' | 'waterways' | 'resources'>('map');
+  const [atlasMode, setAtlasMode] = useState<'map' | 'routes' | 'bestiary' | 'waterways' | 'resources' | 'graph'>('map');
   const [resourceView, setResourceView] = useState<'resources' | 'rituals'>('resources');
   const enter = useAppStore((s) => s.enterQingqiu);
   const [selectedChapterId, setSelectedChapterId] = useState('nanshan-jing');
@@ -46,6 +47,7 @@ export default function Atlas() {
         <button role="tab" aria-selected={atlasMode === 'bestiary'} className={atlasMode === 'bestiary' ? 'active' : ''} onClick={() => setAtlasMode('bestiary')}>异兽图鉴</button>
         <button role="tab" aria-selected={atlasMode === 'waterways'} className={atlasMode === 'waterways' ? 'active' : ''} onClick={() => setAtlasMode('waterways')}>山川水系</button>
         <button role="tab" aria-selected={atlasMode === 'resources'} className={atlasMode === 'resources' ? 'active' : ''} onClick={() => { setResourceView('resources'); setAtlasMode('resources'); }}>山产志</button>
+        <button role="tab" aria-selected={atlasMode === 'graph'} className={atlasMode === 'graph' ? 'active' : ''} onClick={() => setAtlasMode('graph')}>关系图谱</button>
       </div>
       <svg className="world-map" viewBox="0 0 1000 640" role="img" aria-label="山海世界艺术概念底图，非精确历史地理图" preserveAspectRatio="xMidYMid slice">
         <defs>
@@ -155,7 +157,7 @@ export default function Atlas() {
         <div className="atlas-knowledge-overlay">
           {atlasMode === 'routes'
             ? <MountainRoutes onOpenBestiary={() => setAtlasMode('bestiary')} onOpenResources={() => { setResourceView('resources'); setAtlasMode('resources'); }} onOpenWaterways={() => setAtlasMode('waterways')} onOpenRituals={() => { setResourceView('rituals'); setAtlasMode('resources'); }} />
-            : atlasMode === 'bestiary' ? <Bestiary /> : atlasMode === 'waterways' ? <Waterways /> : <MountainResources initialView={resourceView} />}
+            : atlasMode === 'bestiary' ? <Bestiary /> : atlasMode === 'waterways' ? <Waterways /> : atlasMode === 'graph' ? <KnowledgeGraph /> : <MountainResources initialView={resourceView} />}
         </div>
       )}
     </section>
