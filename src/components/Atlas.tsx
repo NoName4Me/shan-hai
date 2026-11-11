@@ -5,6 +5,7 @@ import MountainRoutes from './MountainRoutes';
 import Waterways from './Waterways';
 import MountainResources from './MountainResources';
 import KnowledgeGraph from './KnowledgeGraph';
+import { getKnowledgeNodeIdForAtlasLocation } from '../data/knowledgeGraph';
 import MythologyExplorer from './MythologyExplorer';
 import { useAppStore } from '../store';
 
@@ -17,6 +18,7 @@ export default function Atlas() {
   const [selectedPlaceId, setSelectedPlaceId] = useState<string | null>(null);
   const selectedChapter = chapters.find((chapter) => chapter.id === selectedChapterId) ?? chapters[0];
   const selectedPlace = locations.find((place) => place.id === selectedPlaceId) ?? null;
+  const selectedPlaceGraphNodeId = selectedPlace ? getKnowledgeNodeIdForAtlasLocation(selectedPlace.id) : null;
   const selectedGroup = chapterGroups.find((group) => group.id === selectedChapter.group) ?? chapterGroups[0];
   const visibleChapters = chapters.filter((chapter) => chapter.group === selectedGroup.id);
   const routePoints = useMemo(
@@ -124,6 +126,7 @@ export default function Atlas() {
           <p className="place-relation">{selectedPlace.relation}</p>
           <p className="place-note">{selectedPlace.note}</p>
           <a className="source-link" href={selectedPlace.sourceUrl} target="_blank" rel="noreferrer">查阅维基文库原文 ↗</a>
+          {selectedPlaceGraphNodeId && <button className="place-graph-link" onClick={() => { setGraphTargetId(selectedPlaceGraphNodeId); setAtlasMode('graph'); }}>在关系图谱中探索 ↗</button>}
           {selectedPlace.sceneId === 'qingqiu' && (
             <button className="place-enter" onClick={enter}>进入青丘 3D 试境 <span>↗</span></button>
           )}
@@ -160,7 +163,7 @@ export default function Atlas() {
         <div className="atlas-knowledge-overlay">
           {atlasMode === 'routes'
             ? <MountainRoutes onOpenBestiary={() => setAtlasMode('bestiary')} onOpenResources={() => { setResourceView('resources'); setAtlasMode('resources'); }} onOpenWaterways={() => setAtlasMode('waterways')} onOpenRituals={() => { setResourceView('rituals'); setAtlasMode('resources'); }} />
-            : atlasMode === 'bestiary' ? <Bestiary /> : atlasMode === 'waterways' ? <Waterways /> : atlasMode === 'graph' ? <KnowledgeGraph initialSelectedId={graphTargetId} /> : atlasMode === 'mythology' ? <MythologyExplorer onOpenGraph={(nodeId) => { setGraphTargetId(nodeId); setAtlasMode('graph'); }} /> : <MountainResources initialView={resourceView} />}
+            : atlasMode === 'bestiary' ? <Bestiary /> : atlasMode === 'waterways' ? <Waterways /> : atlasMode === 'graph' ? <KnowledgeGraph initialSelectedId={graphTargetId} onOpenMap={(placeId) => { choosePlace(placeId); setAtlasMode('map'); }} /> : atlasMode === 'mythology' ? <MythologyExplorer onOpenGraph={(nodeId) => { setGraphTargetId(nodeId); setAtlasMode('graph'); }} /> : <MountainResources initialView={resourceView} />}
         </div>
       )}
     </section>
