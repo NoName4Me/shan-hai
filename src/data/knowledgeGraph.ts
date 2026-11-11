@@ -5,6 +5,7 @@ import { bestiary } from './bestiary';
 import { mountainRituals } from './mountainRituals';
 import { chapters, locations } from '../atlas';
 import { overseasEntities, overseasRelations, type OverseasKind } from './overseasEntities';
+import { inlandEntities, inlandRelations, inlandChapterNotes } from './inlandEntities';
 
 export type KnowledgeKind = '山' | '水' | '物产' | '异兽' | '祀典' | '神形' | '古国' | '神祇' | '神话意象' | '篇章' | OverseasKind;
 export type KnowledgeNode = {
@@ -257,6 +258,57 @@ for (const relation of overseasRelations) {
   if (!from || !to || !source) continue;
   addEdge({
     id: 'overseas-relation:' + relation.id,
+    from,
+    to,
+    relation: relation.relation,
+    chapterName: source.chapterName,
+    sourceUrl: source.sourceUrl,
+    sourceText: relation.quote
+  });
+}
+
+const inlandGraphIds = new Map<string, string>();
+const inlandById = new Map(inlandEntities.map((item) => [item.id, item]));
+for (const chapterId of new Set(inlandEntities.map((item) => item.chapterId))) {
+  const chapter = chapters.find((item) => item.id === chapterId);
+  const editorialNote = inlandChapterNotes.find((item) => item.chapterId === chapterId)?.note;
+  addNode({
+    id: 'chapter:' + chapterId,
+    label: chapter?.name ?? chapterId,
+    kind: '篇章',
+    chapterName: chapter?.name ?? chapterId,
+    description: [chapter?.summary, editorialNote].filter(Boolean).join(' · ') || '《山海经》篇章索引'
+  });
+}
+for (const item of inlandEntities) {
+  const nodeId = item.graphId ?? 'inland:' + item.id;
+  inlandGraphIds.set(item.id, nodeId);
+  addNode({
+    id: nodeId,
+    label: item.name,
+    kind: item.kind,
+    chapterName: item.chapterName,
+    description: item.description + (item.note ? ' · ' + item.note : ''),
+    sourceUrl: item.sourceUrl,
+    sourceText: item.quote
+  });
+  addEdge({
+    id: 'inland-chapter:' + item.id,
+    from: 'chapter:' + item.chapterId,
+    to: nodeId,
+    relation: '本篇记载',
+    chapterName: item.chapterName,
+    sourceUrl: item.sourceUrl,
+    sourceText: item.quote
+  });
+}
+for (const relation of inlandRelations) {
+  const from = inlandGraphIds.get(relation.fromId);
+  const to = inlandGraphIds.get(relation.toId);
+  const source = inlandById.get(relation.fromId);
+  if (!from || !to || !source) continue;
+  addEdge({
+    id: 'inland-relation:' + relation.id,
     from,
     to,
     relation: relation.relation,
