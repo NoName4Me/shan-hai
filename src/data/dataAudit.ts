@@ -6,6 +6,7 @@ import { mountainRituals } from './mountainRituals';
 import { knowledgeEdges, knowledgeNodes } from './knowledgeGraph';
 import { locations } from '../atlas';
 import { overseasEntities, overseasRelations } from './overseasEntities';
+import { inlandEntities, inlandRelations, inlandChapterNotes } from './inlandEntities';
 
 const mountainIds = mountainRoutes.flatMap((route) => route.nodes.map((node) => node.id));
 const routeIds = mountainRoutes.map((route) => route.id);
@@ -34,6 +35,12 @@ export const dataAudit = {
   duplicateOverseasIds: overseasEntities.map((item) => item.id).filter((id, index, all) => all.indexOf(id) !== index),
   orphanOverseasRelations: overseasRelations.filter((item) => !overseasEntities.some((entity) => entity.id === item.fromId) || !overseasEntities.some((entity) => entity.id === item.toId)).map((item) => item.id),
   missingOverseasSources: overseasEntities.filter((item) => !item.sourceUrl.startsWith('https://')).map((item) => item.id),
+  inlandEntityCount: inlandEntities.length,
+  inlandRelationCount: inlandRelations.length,
+  inlandEditorialNoteCount: inlandChapterNotes.length,
+  duplicateInlandIds: inlandEntities.map((item) => item.id).filter((id, index, all) => all.indexOf(id) !== index),
+  orphanInlandRelations: inlandRelations.filter((item) => !inlandEntities.some((entity) => entity.id === item.fromId) || !inlandEntities.some((entity) => entity.id === item.toId)).map((item) => item.id),
+  missingInlandSources: inlandEntities.filter((item) => !item.sourceUrl.startsWith('https://')).map((item) => item.id),
   graphNodeCount: knowledgeNodes.length,
   graphEdgeCount: knowledgeEdges.length
 };
@@ -48,5 +55,8 @@ export const dataAuditIssues = [
   ...dataAudit.duplicateOverseasIds.map((id) => '海经实体 ID 重复：' + id),
   ...dataAudit.orphanOverseasRelations.map((id) => '海经关系缺少实体端点：' + id),
   ...dataAudit.missingOverseasSources.map((id) => '海经实体缺少原文链接：' + id),
+  ...dataAudit.duplicateInlandIds.map((id) => '海内经实体 ID 重复：' + id),
+  ...dataAudit.orphanInlandRelations.map((id) => '海内经关系缺少实体端点：' + id),
+  ...dataAudit.missingInlandSources.map((id) => '海内经实体缺少原文链接：' + id),
   ...dataAudit.missingSourceUrls.map((id) => '缺少有效原文链接：' + id)
 ];
