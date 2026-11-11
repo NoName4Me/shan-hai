@@ -7,6 +7,7 @@ import { knowledgeEdges, knowledgeNodes } from './knowledgeGraph';
 import { locations } from '../atlas';
 import { overseasEntities, overseasRelations } from './overseasEntities';
 import { inlandEntities, inlandRelations, inlandChapterNotes } from './inlandEntities';
+import { dahuangEntities, dahuangRelations, dahuangChapterNotes } from './dahuangEntities';
 
 const mountainIds = mountainRoutes.flatMap((route) => route.nodes.map((node) => node.id));
 const routeIds = mountainRoutes.map((route) => route.id);
@@ -41,6 +42,12 @@ export const dataAudit = {
   duplicateInlandIds: inlandEntities.map((item) => item.id).filter((id, index, all) => all.indexOf(id) !== index),
   orphanInlandRelations: inlandRelations.filter((item) => !inlandEntities.some((entity) => entity.id === item.fromId) || !inlandEntities.some((entity) => entity.id === item.toId)).map((item) => item.id),
   missingInlandSources: inlandEntities.filter((item) => !item.sourceUrl.startsWith('https://')).map((item) => item.id),
+  dahuangEntityCount: dahuangEntities.length,
+  dahuangRelationCount: dahuangRelations.length,
+  dahuangEditorialNoteCount: dahuangChapterNotes.length,
+  duplicateDahuangIds: dahuangEntities.map((item) => item.id).filter((id, index, all) => all.indexOf(id) !== index),
+  orphanDahuangRelations: dahuangRelations.filter((item) => !dahuangEntities.some((entity) => entity.id === item.fromId) || !dahuangEntities.some((entity) => entity.id === item.toId)).map((item) => item.id),
+  missingDahuangSources: dahuangEntities.filter((item) => !item.sourceUrl.startsWith('https://')).map((item) => item.id),
   graphNodeCount: knowledgeNodes.length,
   graphEdgeCount: knowledgeEdges.length
 };
@@ -58,5 +65,8 @@ export const dataAuditIssues = [
   ...dataAudit.duplicateInlandIds.map((id) => '海内经实体 ID 重复：' + id),
   ...dataAudit.orphanInlandRelations.map((id) => '海内经关系缺少实体端点：' + id),
   ...dataAudit.missingInlandSources.map((id) => '海内经实体缺少原文链接：' + id),
+  ...dataAudit.duplicateDahuangIds.map((id) => '大荒经实体 ID 重复：' + id),
+  ...dataAudit.orphanDahuangRelations.map((id) => '大荒经关系缺少实体端点：' + id),
+  ...dataAudit.missingDahuangSources.map((id) => '大荒经实体缺少原文链接：' + id),
   ...dataAudit.missingSourceUrls.map((id) => '缺少有效原文链接：' + id)
 ];
