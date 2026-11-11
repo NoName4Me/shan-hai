@@ -27,8 +27,8 @@ const positions = [
   [160, 285], [246, 122], [510, 190], [540, 365], [300, 365], [300, 190]
 ];
 
-export default function KnowledgeGraph() {
-  const [selectedId, setSelectedId] = useState('south-qingqiu');
+export default function KnowledgeGraph({ initialSelectedId = 'south-qingqiu' }: { initialSelectedId?: string }) {
+  const [selectedId, setSelectedId] = useState(initialSelectedId);
   const [kind, setKind] = useState<'全部' | KnowledgeKind>('全部');
   const [query, setQuery] = useState('');
   const selected = knowledgeNodes.find((node) => node.id === selectedId) ?? knowledgeNodes[0];
