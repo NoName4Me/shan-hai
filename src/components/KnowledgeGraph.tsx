@@ -1,5 +1,5 @@
 import { useMemo, useState } from 'react';
-import { getKnowledgeNeighbors, knowledgeEdges, knowledgeKinds, knowledgeNodes, type KnowledgeKind, type KnowledgeNode } from '../data/knowledgeGraph';
+import { getAtlasLocationIdForKnowledgeNode, getKnowledgeNeighbors, knowledgeEdges, knowledgeKinds, knowledgeNodes, type KnowledgeKind, type KnowledgeNode } from '../data/knowledgeGraph';
 import { dataAudit, dataAuditIssues } from '../data/dataAudit';
 
 const kindColors: Record<KnowledgeKind, string> = {
@@ -27,12 +27,13 @@ const positions = [
   [160, 285], [246, 122], [510, 190], [540, 365], [300, 365], [300, 190]
 ];
 
-export default function KnowledgeGraph() {
-  const [selectedId, setSelectedId] = useState('south-qingqiu');
+export default function KnowledgeGraph({ initialSelectedId = 'south-qingqiu', onOpenMap }: { initialSelectedId?: string; onOpenMap?: (locationId: string) => void }) {
+  const [selectedId, setSelectedId] = useState(initialSelectedId);
   const [kind, setKind] = useState<'全部' | KnowledgeKind>('全部');
   const [query, setQuery] = useState('');
   const selected = knowledgeNodes.find((node) => node.id === selectedId) ?? knowledgeNodes[0];
   const neighbors = useMemo(() => getKnowledgeNeighbors(selected.id), [selected.id]);
+  const selectedAtlasLocationId = getAtlasLocationIdForKnowledgeNode(selected.id);
   const visibleNeighbors = neighbors.filter(({ node }) => kind === '全部' || node.kind === kind);
   const matching = useMemo(() => {
     const q = query.trim().toLowerCase();
@@ -104,6 +105,7 @@ export default function KnowledgeGraph() {
           </div>
           {selected.sourceText && <blockquote>{selected.sourceText}</blockquote>}
           {selected.sourceUrl && <a href={selected.sourceUrl} target="_blank" rel="noreferrer">查阅原文出处 ↗</a>}
+          {selectedAtlasLocationId && onOpenMap && <button className="graph-map-link" onClick={() => onOpenMap(selectedAtlasLocationId)}>在舆图中定位 ↗</button>}
           <button className="graph-reset" onClick={() => { setSelectedId('south-qingqiu'); setKind('全部'); setQuery(''); }}>返回青丘起点</button>
         </aside>
       </div>

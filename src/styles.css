@@ -383,3 +383,75 @@ h1,h2,p{margin-top:0}.atlas-hero h1,.world-heading h1{font-family:"Noto Serif SC
 .ritual-facets section span{font:10px/1.7 "Noto Serif SC",serif;color:#bdc8b9}
 .graph-audit-ok{color:#a9c5a6!important}
 .graph-audit-warning{color:#e0a68b!important}
+
+
+/* V1.0 · 神话事件线与人物谱系 */
+.atlas-mode-switch{max-width:calc(100% - 2 * clamp(22px,6vw,90px));overflow-x:auto;scrollbar-width:none}
+.atlas-mode-switch::-webkit-scrollbar{display:none}
+.mythology-toolbar{display:grid;grid-template-columns:auto minmax(220px,1fr) minmax(150px,190px);gap:10px;align-items:center;margin:22px 0 12px}
+.mythology-mode-tabs{display:flex;gap:5px;flex-wrap:wrap}
+.mythology-mode-tabs button{padding:10px 13px;border:1px solid rgba(196,207,187,.18);background:rgba(5,27,32,.45);color:#aebfb2;font:10px "Noto Serif SC",serif;white-space:nowrap}
+.mythology-mode-tabs button.active{border-color:rgba(222,194,147,.55);background:rgba(218,190,144,.12);color:#ecd6ae}
+.mythology-mode-tabs small{margin-left:7px;color:#91a99e;font:9px Inter,sans-serif}
+.mythology-search{min-width:0}
+.mythology-chapter-filter{display:flex;align-items:center;gap:8px;min-width:0;padding:9px 11px;border:1px solid rgba(196,207,187,.18);background:rgba(5,27,32,.45)}
+.mythology-chapter-filter span{font-size:9px;color:#cdb58d;white-space:nowrap}
+.mythology-chapter-filter select{width:100%;min-width:0;border:0;outline:0;background:#0a3035;color:#e7e3d4;font:10px "Noto Serif SC",serif}
+.mythology-method-note{display:flex;gap:12px;align-items:flex-start;margin:12px 0;padding:12px 15px;border:1px solid rgba(212,185,137,.22);background:rgba(39,43,35,.2)}
+.mythology-method-note strong{flex:none;color:#dfc397;font:11px "Noto Serif SC",serif;letter-spacing:.08em}
+.mythology-method-note span{color:#aebfb2;font:10px/1.8 "Noto Serif SC",serif}
+.mythology-results-count{margin:14px 0 8px;color:#91a99e;font-size:9px;letter-spacing:.08em}
+.mythology-chapter-group{margin-top:20px}
+.mythology-chapter-heading{display:flex;align-items:center;justify-content:space-between;padding:10px 2px;border-bottom:1px solid rgba(216,190,145,.3);color:#e7d6b8;font:15px "Noto Serif SC",serif;letter-spacing:.1em}
+.mythology-chapter-heading small{color:#8fa89b;font:9px Inter,sans-serif;letter-spacing:0}
+.mythology-event-list{position:relative;display:grid;grid-template-columns:repeat(2,minmax(0,1fr));gap:9px;margin-top:10px}
+.mythology-event-card{display:grid;grid-template-columns:34px minmax(0,1fr);gap:10px;min-width:0;padding:16px 15px;border:1px solid rgba(196,207,187,.14);background:rgba(5,27,32,.48)}
+.mythology-event-index{padding-top:2px;color:rgba(219,195,153,.55);font:20px Georgia,serif}
+.mythology-event-content{min-width:0}
+.mythology-event-kicker{color:#c7aa7c;font:8px Inter,sans-serif;letter-spacing:.17em}
+.mythology-event-content h3{margin:8px 0 6px;color:#f0e5ce;font:500 17px "Noto Serif SC",serif;letter-spacing:.05em}
+.mythology-event-content>p{margin:0;color:#b4c3b5;font:10px/1.8 "Noto Serif SC",serif}
+.mythology-event-content blockquote{margin:11px 0 0;padding:8px 0 8px 10px;border-left:1px solid #c8ac7e;color:#e0d4bb;font:10px/1.8 "Noto Serif SC",serif}
+.mythology-related{margin-top:12px}
+.mythology-related>small{display:block;margin-bottom:7px;color:#879f93;font-size:8px;letter-spacing:.12em}
+.mythology-related>div{display:flex;flex-wrap:wrap;gap:5px}
+.mythology-related button{display:flex;flex-direction:column;gap:3px;max-width:100%;padding:6px 8px;border:1px solid rgba(196,207,187,.16);background:rgba(12,43,47,.55);color:#e3ddcc;text-align:left;font:10px "Noto Serif SC",serif}
+.mythology-related button span{max-width:100%;overflow:hidden;color:#829b90;font:8px Inter,sans-serif;text-overflow:ellipsis;white-space:nowrap}
+.mythology-event-actions{display:flex;gap:13px;flex-wrap:wrap;margin-top:12px}
+.mythology-event-actions button,.mythology-event-actions a{padding:0;border:0;background:none;color:#dfc49a;font:9px "Noto Serif SC",serif;text-decoration:none}
+.mythology-lineage-list{display:grid;grid-template-columns:repeat(2,minmax(0,1fr));gap:8px;margin-top:10px}
+.mythology-lineage-row{display:grid;grid-template-columns:minmax(0,1fr) auto minmax(0,1fr);gap:8px;align-items:center;padding:13px;border:1px solid rgba(196,207,187,.14);background:rgba(5,27,32,.48);min-width:0}
+.mythology-lineage-person{min-width:0}
+.mythology-lineage-person small{display:block;margin-bottom:5px;color:#849e92;font-size:8px;line-height:1.5}
+.mythology-lineage-person button{padding:0;border:0;background:none;color:#f0e5ce;font:14px "Noto Serif SC",serif;text-align:left;overflow-wrap:anywhere}
+.mythology-lineage-link{display:flex;flex-direction:column;align-items:center;gap:5px;max-width:110px;color:#d7bd91;text-align:center}
+.mythology-lineage-link span{font:9px/1.5 "Noto Serif SC",serif}
+.mythology-lineage-link i{font-style:normal;color:#b69c71}
+.mythology-lineage-evidence{grid-column:1/-1;padding-top:8px;border-top:1px solid rgba(196,207,187,.1)}
+.mythology-lineage-evidence blockquote{margin:0;color:#b5c3b6;font:9px/1.8 "Noto Serif SC",serif}
+.mythology-lineage-evidence small{display:block;margin-top:6px;color:#829b90;font-size:8px}
+.mythology-empty{grid-column:1/-1;padding:24px;border:1px solid rgba(196,207,187,.14);color:#91a99e;font-size:10px}
+@media(max-width:980px){
+ .mythology-toolbar{grid-template-columns:1fr 1fr}
+ .mythology-mode-tabs{grid-column:1/-1}
+ .mythology-search{grid-column:1}
+ .mythology-chapter-filter{grid-column:2}
+ .mythology-event-list,.mythology-lineage-list{grid-template-columns:1fr}
+}
+@media(max-width:760px){
+ .atlas-mode-switch{max-width:calc(100% - 40px);overflow-x:auto;flex-wrap:nowrap;left:20px;right:20px}
+ .atlas-mode-switch button{flex:none}
+ .mythology-toolbar{grid-template-columns:1fr}
+ .mythology-mode-tabs,.mythology-search,.mythology-chapter-filter{grid-column:1}
+ .mythology-mode-tabs button{flex:1}
+ .mythology-method-note{gap:8px}
+ .mythology-method-note span{font-size:9px}
+ .mythology-event-card{padding:13px 11px}
+ .mythology-event-content h3{font-size:15px}
+ .mythology-lineage-row{gap:6px;padding:11px}
+ .mythology-lineage-person button{font-size:12px}
+ .mythology-lineage-link{max-width:90px}
+}
+
+.place-graph-link{display:inline-block;margin:0 0 0 12px;padding:0;border:0;border-bottom:1px solid rgba(226,200,155,.4);background:transparent;color:#e2c89b;font-size:10px;letter-spacing:.06em}
+.graph-map-link{align-self:flex-start;margin-top:10px;padding:7px 9px;border:1px solid rgba(216,190,145,.35);background:rgba(218,190,144,.07);color:#dfc49a;font-size:9px}

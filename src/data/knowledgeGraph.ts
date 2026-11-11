@@ -480,6 +480,34 @@ export const knowledgeNodes = [...nodes.values()];
 export const knowledgeEdges = [...edges.values()];
 export const knowledgeKinds: KnowledgeKind[] = ['山', '水', '异兽', '异鸟', '物产', '古国', '异人', '人物', '神祇', '神话人物', '神木', '地理区域', '神话事件', '祀典', '神形', '神话意象', '篇章'];
 
+
+export function getKnowledgeNodeIdForAtlasLocation(locationId: string): string | null {
+  const location = locations.find((item) => item.id === locationId);
+  if (!location) return null;
+  const directId = 'place:' + locationId;
+  if (nodes.has(directId)) return directId;
+  const chapterName = chapters.find((chapter) => chapter.id === location.chapterId)?.name;
+  const routeNode = mountainRoutes
+    .filter((route) => route.chapterName === chapterName)
+    .flatMap((route) => route.nodes)
+    .find((node) => node.name === location.name);
+  return routeNode && nodes.has(routeNode.id) ? routeNode.id : null;
+}
+
+export function getAtlasLocationIdForKnowledgeNode(nodeId: string): string | null {
+  if (nodeId.startsWith('place:')) {
+    const locationId = nodeId.slice('place:'.length);
+    return locations.some((item) => item.id === locationId) ? locationId : null;
+  }
+  const node = nodes.get(nodeId);
+  if (!node) return null;
+  const location = locations.find((item) =>
+    item.name === node.label &&
+    chapters.find((chapter) => chapter.id === item.chapterId)?.name === node.chapterName
+  );
+  return location?.id ?? null;
+}
+
 export function getKnowledgeNeighbors(nodeId: string) {
   return knowledgeEdges
     .filter((edge) => edge.from === nodeId || edge.to === nodeId)
