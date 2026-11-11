@@ -12,8 +12,9 @@ Copy these values into the repository's GitHub **About** panel.
   - react-three-fiber
   - interactive-map
   - digital-humanities
+  - textual-hydrology
   - mythology
   - vite
   - github-pages
 
-The package metadata and README repeat the same description and Pages URL for consistency.
+package.json、README.md 与本文件使用同一 Description、Website 和关键词。
