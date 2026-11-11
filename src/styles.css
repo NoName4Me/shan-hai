@@ -452,3 +452,6 @@ h1,h2,p{margin-top:0}.atlas-hero h1,.world-heading h1{font-family:"Noto Serif SC
  .mythology-lineage-person button{font-size:12px}
  .mythology-lineage-link{max-width:90px}
 }
+
+.place-graph-link{display:inline-block;margin:0 0 0 12px;padding:0;border:0;border-bottom:1px solid rgba(226,200,155,.4);background:transparent;color:#e2c89b;font-size:10px;letter-spacing:.06em}
+.graph-map-link{align-self:flex-start;margin-top:10px;padding:7px 9px;border:1px solid rgba(216,190,145,.35);background:rgba(218,190,144,.07);color:#dfc49a;font-size:9px}
