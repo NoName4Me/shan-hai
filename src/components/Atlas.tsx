@@ -1,11 +1,47 @@
-import { locations } from '../atlas';
+import { useMemo, useState } from 'react';
+import { chapterGroups, chapters, locations } from '../atlas';
+import Bestiary from './Bestiary';
+import MountainRoutes from './MountainRoutes';
 import { useAppStore } from '../store';
 
 export default function Atlas() {
+  const [atlasMode, setAtlasMode] = useState<'map' | 'routes' | 'bestiary'>('map');
   const enter = useAppStore((s) => s.enterQingqiu);
+  const [selectedChapterId, setSelectedChapterId] = useState('nanshan-jing');
+  const [selectedPlaceId, setSelectedPlaceId] = useState<string | null>(null);
+  const selectedChapter = chapters.find((chapter) => chapter.id === selectedChapterId) ?? chapters[0];
+  const selectedPlace = locations.find((place) => place.id === selectedPlaceId) ?? null;
+  const selectedGroup = chapterGroups.find((group) => group.id === selectedChapter.group) ?? chapterGroups[0];
+  const visibleChapters = chapters.filter((chapter) => chapter.group === selectedGroup.id);
+  const routePoints = useMemo(
+    () => locations
+      .filter((place) => place.routeId === 'que-shan-first')
+      .sort((a, b) => (a.routeOrder ?? 0) - (b.routeOrder ?? 0))
+      .map((place) => (place.x * 10) + ',' + (place.y * 6.4))
+      .join(' '),
+    []
+  );
+
+  const chooseChapter = (chapterId: string) => {
+    setSelectedChapterId(chapterId);
+    setSelectedPlaceId(null);
+  };
+
+  const choosePlace = (placeId: string) => {
+    const place = locations.find((item) => item.id === placeId);
+    if (!place) return;
+    setSelectedChapterId(place.chapterId);
+    setSelectedPlaceId(place.id);
+  };
+
   return (
-    <section className="atlas-section" aria-label="山海经神话概念舆图">
-      <div className="atlas-topline"><span>天地有尽 · 山海无垠</span><span>THE ATLAS OF MYTHS / 001</span></div>
+    <section className={"atlas-section atlas-mode-" + atlasMode} aria-label="山海经神话概念舆图">
+      <div className="atlas-topline"><span>天地有尽 · 山海无垠</span><span>THE ATLAS OF MYTHS / 018 VOLUMES</span></div>
+      <div className="atlas-mode-switch" role="tablist" aria-label="探索内容">
+        <button role="tab" aria-selected={atlasMode === 'map'} className={atlasMode === 'map' ? 'active' : ''} onClick={() => setAtlasMode('map')}>神话舆图</button>
+        <button role="tab" aria-selected={atlasMode === 'routes'} className={atlasMode === 'routes' ? 'active' : ''} onClick={() => setAtlasMode('routes')}>山经路线</button>
+        <button role="tab" aria-selected={atlasMode === 'bestiary'} className={atlasMode === 'bestiary' ? 'active' : ''} onClick={() => setAtlasMode('bestiary')}>异兽图鉴</button>
+      </div>
       <svg className="world-map" viewBox="0 0 1000 640" role="img" aria-label="山海世界艺术概念底图，非精确历史地理图" preserveAspectRatio="xMidYMid slice">
         <defs>
           <linearGradient id="sea" x1="0" y1="0" x2="1" y2="1">
@@ -46,18 +82,77 @@ export default function Atlas() {
         </g>
       </svg>
       <div className="map-points">
+        {selectedChapterId === 'nanshan-jing' && (
+          <svg className="map-route" viewBox="0 0 1000 640" aria-hidden="true">
+            <polyline points={routePoints} fill="none" stroke="#e8c995" strokeWidth="2.2" strokeDasharray="5 8" opacity=".85"/>
+          </svg>
+        )}
         {locations.map((item) => (
-          <button key={item.id} className={'map-point '+(item.available?'available':'locked')}
-            style={{left: item.x+'%', top:item.y+'%'}}
-            disabled={!item.available} onClick={enter}
-            title={item.available?'进入青丘':'后续开放：'+item.name}
-            aria-label={item.available?'进入'+item.name:item.name+'，后续开放'}>
+          <button
+            key={item.id}
+            className={'map-point ' + (item.chapterId === selectedChapterId ? 'in-chapter' : 'dimmed') + (item.id === selectedPlaceId ? ' selected' : '') + (item.sceneId ? ' scene-ready' : '')}
+            style={{left: item.x + '%', top: item.y + '%'}}
+            onClick={() => choosePlace(item.id)}
+            title={item.name + ' · ' + item.evidenceLabel}
+            aria-label={'查看' + item.name + '的原文依据'}
+            aria-pressed={item.id === selectedPlaceId}
+          >
             <span className="map-pin"><span/></span>
             <span className="map-point-label"><b>{item.name}</b><small>{item.english}</small></span>
           </button>
         ))}
       </div>
-      <div className="map-legend"><span className="tiny-star">✧</span> 地点位置为艺术性示意，不等于历史地理坐标</div>
+      <div className="map-legend" hidden={atlasMode !== "map"}><span className="tiny-star">✧</span> 金线：原文路线关系 · 地图点位：概念示意</div>
+
+      {atlasMode === 'map' && selectedPlace && (
+        <aside className="place-panel">
+          <button className="close-place" onClick={() => setSelectedPlaceId(null)} aria-label="关闭地点详情">×</button>
+          <div className="place-kicker">{selectedPlace.evidenceLabel} / VOL. {String(chapters.find((item) => item.id === selectedPlace.chapterId)?.volume ?? 0).padStart(2, '0')}</div>
+          <h2>{selectedPlace.name}</h2>
+          <div className="place-sub">{selectedPlace.sub}</div>
+          <blockquote>{selectedPlace.quote}</blockquote>
+          <p className="place-relation">{selectedPlace.relation}</p>
+          <p className="place-note">{selectedPlace.note}</p>
+          <a className="source-link" href={selectedPlace.sourceUrl} target="_blank" rel="noreferrer">查阅维基文库原文 ↗</a>
+          {selectedPlace.sceneId === 'qingqiu' && (
+            <button className="place-enter" onClick={enter}>进入青丘 3D 试境 <span>↗</span></button>
+          )}
+        </aside>
+      )}
+
+      <nav className="chapter-dock" aria-label="山海经十八卷导航" hidden={atlasMode !== "map"}>
+        <div className="chapter-dock-heading">
+          <span>十八卷 · 文本索引</span>
+          <small>{selectedChapter.name} / {String(selectedChapter.volume).padStart(2, '0')}</small>
+        </div>
+        <div className="chapter-groups">
+          {chapterGroups.map((group) => (
+            <button
+              key={group.id}
+              className={group.id === selectedGroup.id ? 'active' : ''}
+              onClick={() => chooseChapter(chapters.find((chapter) => chapter.group === group.id)!.id)}
+              title={group.sublabel}
+            >{group.label}</button>
+          ))}
+        </div>
+        <div className="chapter-list">
+          {visibleChapters.map((chapter) => (
+            <button
+              key={chapter.id}
+              className={chapter.id === selectedChapterId ? 'active' : ''}
+              onClick={() => chooseChapter(chapter.id)}
+            ><span>{String(chapter.volume).padStart(2, '0')}</span>{chapter.name}</button>
+          ))}
+        </div>
+        <p className="chapter-summary">{selectedChapter.summary}</p>
+      </nav>
+      {atlasMode !== 'map' && (
+        <div className="atlas-knowledge-overlay">
+          {atlasMode === 'routes'
+            ? <MountainRoutes onOpenBestiary={() => setAtlasMode('bestiary')} />
+            : <Bestiary />}
+        </div>
+      )}
     </section>
   );
 }
