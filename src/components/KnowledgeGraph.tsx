@@ -53,11 +53,11 @@ export default function KnowledgeGraph() {
       <div className="knowledge-heading">
         <div className="knowledge-eyebrow">SHAN HAI / KNOWLEDGE RELATIONSHIP NETWORK</div>
         <h2>山海关系图谱 <span>万物相连</span></h2>
-        <p>以古籍明确记载的山名为锚点，展开水系、物产、异兽与祀典关系。每条连线代表一条文本关系，不代表现代地理或生物学推断。</p>
+        <p>从五藏山经的路线、水系与物产，延伸至海外、海内和大荒诸经的古国、神祇、异兽与神话事件。每条连线均对应可追溯的文本依据，不代表现代地理或生物学推断。</p>
       </div>
 
       <div className="graph-toolbar">
-        <label className="bestiary-search"><span>检索</span><input value={query} onChange={(event) => setQuery(event.target.value)} placeholder="搜索山名、水名、异兽或物产" /></label>
+        <label className="bestiary-search"><span>检索</span><input value={query} onChange={(event) => setQuery(event.target.value)} placeholder="搜索山名、古国、神祇、异兽或神话事件" /></label>
         <div className="bestiary-kind-filters">
           {(['全部', ...knowledgeKinds] as const).map((item) => <button key={item} className={kind === item ? 'active' : ''} onClick={() => setKind(item)}>{item}</button>)}
         </div>
