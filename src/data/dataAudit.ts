@@ -4,6 +4,7 @@ import { mountainResources } from './mountainResources';
 import { bestiary } from './bestiary';
 import { mountainRituals } from './mountainRituals';
 import { knowledgeEdges, knowledgeNodes } from './knowledgeGraph';
+import { locations } from '../atlas';
 
 const mountainIds = mountainRoutes.flatMap((route) => route.nodes.map((node) => node.id));
 const routeIds = mountainRoutes.map((route) => route.id);
@@ -26,6 +27,7 @@ export const dataAudit = {
     ...bestiary.filter((item) => !item.sourceUrl.startsWith('https://')).map((item) => 'creature:' + item.id),
     ...mountainRituals.filter((item) => !item.sourceUrl.startsWith('https://')).map((item) => 'ritual:' + item.id)
   ],
+  seaLocationCount: locations.filter((item) => !['nanshan-jing', 'xishan-jing', 'beishan-jing', 'dongshan-jing', 'zhongshan-jing'].includes(item.chapterId)).length,
   graphNodeCount: knowledgeNodes.length,
   graphEdgeCount: knowledgeEdges.length
 };
