@@ -6,6 +6,7 @@ import { mountainRituals } from './mountainRituals';
 import { chapters, locations } from '../atlas';
 import { overseasEntities, overseasRelations, type OverseasKind } from './overseasEntities';
 import { inlandEntities, inlandRelations, inlandChapterNotes } from './inlandEntities';
+import { dahuangEntities, dahuangRelations, dahuangChapterNotes } from './dahuangEntities';
 
 export type KnowledgeKind = '山' | '水' | '物产' | '异兽' | '祀典' | '神形' | '古国' | '神祇' | '神话意象' | '篇章' | OverseasKind;
 export type KnowledgeNode = {
@@ -309,6 +310,57 @@ for (const relation of inlandRelations) {
   if (!from || !to || !source) continue;
   addEdge({
     id: 'inland-relation:' + relation.id,
+    from,
+    to,
+    relation: relation.relation,
+    chapterName: source.chapterName,
+    sourceUrl: source.sourceUrl,
+    sourceText: relation.quote
+  });
+}
+
+const dahuangGraphIds = new Map<string, string>();
+const dahuangById = new Map(dahuangEntities.map((item) => [item.id, item]));
+for (const chapterId of new Set(dahuangEntities.map((item) => item.chapterId))) {
+  const chapter = chapters.find((item) => item.id === chapterId);
+  const editorialNote = dahuangChapterNotes.find((item) => item.chapterId === chapterId)?.note;
+  addNode({
+    id: 'chapter:' + chapterId,
+    label: chapter?.name ?? chapterId,
+    kind: '篇章',
+    chapterName: chapter?.name ?? chapterId,
+    description: [chapter?.summary, editorialNote].filter(Boolean).join(' · ') || '《山海经》篇章索引'
+  });
+}
+for (const item of dahuangEntities) {
+  const nodeId = 'dahuang:' + item.id;
+  dahuangGraphIds.set(item.id, nodeId);
+  addNode({
+    id: nodeId,
+    label: item.name,
+    kind: item.kind,
+    chapterName: item.chapterName,
+    description: item.description + (item.note ? ' · ' + item.note : ''),
+    sourceUrl: item.sourceUrl,
+    sourceText: item.quote
+  });
+  addEdge({
+    id: 'dahuang-chapter:' + item.id,
+    from: 'chapter:' + item.chapterId,
+    to: nodeId,
+    relation: '本篇记载',
+    chapterName: item.chapterName,
+    sourceUrl: item.sourceUrl,
+    sourceText: item.quote
+  });
+}
+for (const relation of dahuangRelations) {
+  const from = dahuangGraphIds.get(relation.fromId);
+  const to = dahuangGraphIds.get(relation.toId);
+  const source = dahuangById.get(relation.fromId);
+  if (!from || !to || !source) continue;
+  addEdge({
+    id: 'dahuang-relation:' + relation.id,
     from,
     to,
     relation: relation.relation,
