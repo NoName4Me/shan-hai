@@ -8,7 +8,11 @@ const kindColors: Record<KnowledgeKind, string> = {
   '异兽': '#d49b9b',
   '物产': '#a9bd8e',
   '祀典': '#b7a3cc',
-  '神形': '#d8aa72'
+  '神形': '#d8aa72',
+  '古国': '#b59a82',
+  '神祇': '#d7b17c',
+  '神话意象': '#a6a8c8',
+  '篇章': '#8fa9a1'
 };
 const center = { x: 420, y: 285 };
 const positions = [
