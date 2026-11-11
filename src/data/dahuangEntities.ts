@@ -443,7 +443,7 @@ export const dahuangEntities: DahuangEntity[] = [
   entity('dahuang-bei-jing', 'dn-boneless-person', '无骨人', '异人', '儋耳之子，无骨。', '有人无骨，儋耳之子。'),
   entity('dahuang-bei-jing', 'dn-zhangwei-mountain', '章尾山', '山', '赤水之北，有烛九阴之神。', '赤水之北，有章尾山。'),
   entity('dahuang-bei-jing', 'dn-zhulong', '烛龙', '神祇', '人面蛇身而赤，直目；暝则晦、视则明，又称烛九阴。', '是烛九阴，是谓烛龙。'),
-  entity('dahuang-bei-jing', 'dn-zhuj iuyin', '烛九阴', '神祇', '章尾山之神，亦称烛龙。', '是烛九阴，是谓烛龙。')
+  entity('dahuang-bei-jing', 'dn-zhuyinyin', '烛九阴', '神祇', '章尾山之神，亦称烛龙。', '是烛九阴，是谓烛龙。')
 ];
 
 export const dahuangRelations: DahuangRelation[] = [
@@ -563,9 +563,9 @@ export const dahuangRelations: DahuangRelation[] = [
   { id: 'dw-r35', fromId: 'dw-jige', toId: 'dw-shouma-country', relation: '季格生寿麻', quote: '季格生寿麻。' },
   { id: 'dw-r36', fromId: 'dw-gaishan-country', toId: 'dw-zhu-tree', relation: '盖山之国有朱木', quote: '有盖山之国。有树……名曰朱木。' },
   { id: 'dw-r37', fromId: 'dw-great-wilderness-mountain', toId: 'dw-three-faced-person', relation: '大荒之山有三面人', quote: '有山名曰大荒之山……有人焉三面。' },
-  { id: 'dw-r38', fromId: 'dw-xiah ou-kai', toId: 'dw-tianmu-wilds', relation: '夏后开在天穆之野得九招', quote: '此天穆之野……开焉得始歌九招。' },
-  { id: 'dw-r39', fromId: 'dw-xiah ou-kai', toId: 'dw-jiubian', relation: '夏后开得九辩', quote: '开上三嫔于天，得九辩与九歌以下。' },
-  { id: 'dw-r40', fromId: 'dw-xiah ou-kai', toId: 'dw-jiuge', relation: '夏后开得九歌', quote: '得九辩与九歌以下。' },
+  { id: 'dw-r38', fromId: 'dw-xiahou-kai', toId: 'dw-tianmu-wilds', relation: '夏后开在天穆之野得九招', quote: '此天穆之野……开焉得始歌九招。' },
+  { id: 'dw-r39', fromId: 'dw-xiahou-kai', toId: 'dw-jiubian', relation: '夏后开得九辩', quote: '开上三嫔于天，得九辩与九歌以下。' },
+  { id: 'dw-r40', fromId: 'dw-xiahou-kai', toId: 'dw-jiuge', relation: '夏后开得九歌', quote: '得九辩与九歌以下。' },
   { id: 'dw-r41', fromId: 'dw-lingjie', toId: 'dw-diren-country', relation: '灵恝生氐人', quote: '灵恝生氐人。' },
   { id: 'dw-r42', fromId: 'dw-yufu', toId: 'dw-zhuanxu', relation: '鱼妇叙事关联颛顼死而复苏', quote: '鱼妇……颛顼死即复苏。' },
 
@@ -587,7 +587,7 @@ export const dahuangRelations: DahuangRelation[] = [
   { id: 'dn-r15', fromId: 'dn-jun-country', toId: 'dn-yicai', relation: '均国生役采', quote: '均国生役采。' },
   { id: 'dn-r16', fromId: 'dn-yicai', toId: 'dn-xiujia', relation: '役采生修鞈', quote: '役采生修鞈。' },
   { id: 'dn-r17', fromId: 'dn-xiujia', toId: 'dn-chuoren', relation: '修鞈杀绰人', quote: '修鞈杀绰人。' },
-  { id: 'dn-r18', fromId: 'dn-dan er-country', toId: 'dn-yuhao', relation: '儋耳之国为禺号之子', quote: '儋耳之国，任姓，禺号子。' },
+  { id: 'dn-r18', fromId: 'dn-daner-country', toId: 'dn-yuhao', relation: '儋耳之国为禺号之子', quote: '儋耳之国，任姓，禺号子。' },
   { id: 'dn-r19', fromId: 'dn-yuqiang', toId: 'dn-north-pole-cabinet', relation: '禺彊为北海之渚神', quote: '北海之渚中，有神……名曰禺彊。' },
   { id: 'dn-r20', fromId: 'dn-north-pole-cabinet', toId: 'dn-jiufeng', relation: '北极天柜段落记九凤', quote: '有神，九首人面鸟身，名曰九凤。' },
   { id: 'dn-r21', fromId: 'dn-north-pole-cabinet', toId: 'dn-qiangliang', relation: '北极天柜段落记彊良', quote: '有神衘蛇操蛇……名曰彊良。' },
