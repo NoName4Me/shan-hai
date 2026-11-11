@@ -12,7 +12,14 @@ const kindColors: Record<KnowledgeKind, string> = {
   '古国': '#b59a82',
   '神祇': '#d7b17c',
   '神话意象': '#a6a8c8',
-  '篇章': '#8fa9a1'
+  '篇章': '#8fa9a1',
+  '异人': '#c49b86',
+  '人物': '#c5a77e',
+  '神话人物': '#d6a27e',
+  '异鸟': '#a6b9c9',
+  '神木': '#91b28b',
+  '地理区域': '#9caa9a',
+  '神话事件': '#c1a1bb'
 };
 const center = { x: 420, y: 285 };
 const positions = [
