@@ -174,15 +174,15 @@ export const locations: AtlasLocation[] = [
   {
     id: 'fusang',
     chapterId: 'haiwai-dong-jing',
-    name: '汤谷 · 扶桑',
+    name: '扶桑',
     english: 'FUSANG',
-    sub: '海外东经 · 十日所浴',
+    sub: '海外东经 · 生于汤谷',
     x: 89,
     y: 39,
     evidenceLabel: '原文相对方位',
     quote: '下有汤谷。汤谷上有扶桑，十日所浴……',
     relation: '原文记在黑齿国以北，扶桑生于汤谷之上，居水中。',
-    note: '地图将汤谷与扶桑合为一个探索锚点；后续场景中会分别呈现水域与神木。',
+    note: '地图锚点以扶桑为名；关系图谱将汤谷（水域）与扶桑（神木）拆分为两个实体。',
     sourceUrl: 'https://zh.wikisource.org/zh-hans/山海經/海外東經'
   }
 ];

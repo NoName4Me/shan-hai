@@ -8,7 +8,18 @@ const kindColors: Record<KnowledgeKind, string> = {
   '异兽': '#d49b9b',
   '物产': '#a9bd8e',
   '祀典': '#b7a3cc',
-  '神形': '#d8aa72'
+  '神形': '#d8aa72',
+  '古国': '#b59a82',
+  '神祇': '#d7b17c',
+  '神话意象': '#a6a8c8',
+  '篇章': '#8fa9a1',
+  '异人': '#c49b86',
+  '人物': '#c5a77e',
+  '神话人物': '#d6a27e',
+  '异鸟': '#a6b9c9',
+  '神木': '#91b28b',
+  '地理区域': '#9caa9a',
+  '神话事件': '#c1a1bb'
 };
 const center = { x: 420, y: 285 };
 const positions = [
@@ -97,7 +108,7 @@ export default function KnowledgeGraph() {
         </aside>
       </div>
       <p className="route-method-note">图谱节点与连线均由当前结构化数据生成。山系相邻关系来自路线顺序；水系、物产、异兽及祀典来自对应条目。祭祀形貌只作为“神形记录”，不据此虚构神名。</p>
-      <div className="graph-stats"><span>{knowledgeNodes.length} 个实体节点</span><span>{knowledgeEdges.length} 条文本关系</span><span>{knowledgeEdges.filter((edge) => edge.relation.includes('注入')).length} 条水系注入关系</span><span>{dataAudit.routeCount} 段路线 / {dataAudit.uniqueMountainNodeCount} 个唯一山节点</span><span className={dataAuditIssues.length ? "graph-audit-warning" : "graph-audit-ok"}>{dataAuditIssues.length ? dataAuditIssues.length + " 项关联待修复" : "数据关联完整性检查通过"}</span></div>
+      <div className="graph-stats"><span>{knowledgeNodes.length} 个实体节点</span><span>{knowledgeEdges.length} 条文本关系</span><span>{knowledgeEdges.filter((edge) => edge.relation.includes('注入')).length} 条水系注入关系</span><span>{dataAudit.routeCount} 段路线 / {dataAudit.uniqueMountainNodeCount} 个唯一山节点</span><span>{dataAudit.seaLocationCount} 个海经/海内地理锚点</span><span>{dataAudit.overseasEntityCount} 个海外四经实体 / {dataAudit.overseasRelationCount} 条方位与文本关系</span><span className={dataAuditIssues.length ? "graph-audit-warning" : "graph-audit-ok"}>{dataAuditIssues.length ? dataAuditIssues.length + " 项关联待修复" : "数据关联完整性检查通过"}</span></div>
     </div>
   );
 }
