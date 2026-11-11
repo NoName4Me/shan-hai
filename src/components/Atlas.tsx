@@ -5,13 +5,15 @@ import MountainRoutes from './MountainRoutes';
 import Waterways from './Waterways';
 import MountainResources from './MountainResources';
 import KnowledgeGraph from './KnowledgeGraph';
+import MythologyExplorer from './MythologyExplorer';
 import { useAppStore } from '../store';
 
 export default function Atlas() {
-  const [atlasMode, setAtlasMode] = useState<'map' | 'routes' | 'bestiary' | 'waterways' | 'resources' | 'graph'>('map');
+  const [atlasMode, setAtlasMode] = useState<'map' | 'routes' | 'bestiary' | 'waterways' | 'resources' | 'graph' | 'mythology'>('map');
   const [resourceView, setResourceView] = useState<'resources' | 'rituals'>('resources');
   const enter = useAppStore((s) => s.enterQingqiu);
   const [selectedChapterId, setSelectedChapterId] = useState('nanshan-jing');
+  const [graphTargetId, setGraphTargetId] = useState('south-qingqiu');
   const [selectedPlaceId, setSelectedPlaceId] = useState<string | null>(null);
   const selectedChapter = chapters.find((chapter) => chapter.id === selectedChapterId) ?? chapters[0];
   const selectedPlace = locations.find((place) => place.id === selectedPlaceId) ?? null;
@@ -48,6 +50,7 @@ export default function Atlas() {
         <button role="tab" aria-selected={atlasMode === 'waterways'} className={atlasMode === 'waterways' ? 'active' : ''} onClick={() => setAtlasMode('waterways')}>山川水系</button>
         <button role="tab" aria-selected={atlasMode === 'resources'} className={atlasMode === 'resources' ? 'active' : ''} onClick={() => { setResourceView('resources'); setAtlasMode('resources'); }}>山产志</button>
         <button role="tab" aria-selected={atlasMode === 'graph'} className={atlasMode === 'graph' ? 'active' : ''} onClick={() => setAtlasMode('graph')}>关系图谱</button>
+        <button role="tab" aria-selected={atlasMode === 'mythology'} className={atlasMode === 'mythology' ? 'active' : ''} onClick={() => setAtlasMode('mythology')}>神话脉络</button>
       </div>
       <svg className="world-map" viewBox="0 0 1000 640" role="img" aria-label="山海世界艺术概念底图，非精确历史地理图" preserveAspectRatio="xMidYMid slice">
         <defs>
@@ -157,7 +160,7 @@ export default function Atlas() {
         <div className="atlas-knowledge-overlay">
           {atlasMode === 'routes'
             ? <MountainRoutes onOpenBestiary={() => setAtlasMode('bestiary')} onOpenResources={() => { setResourceView('resources'); setAtlasMode('resources'); }} onOpenWaterways={() => setAtlasMode('waterways')} onOpenRituals={() => { setResourceView('rituals'); setAtlasMode('resources'); }} />
-            : atlasMode === 'bestiary' ? <Bestiary /> : atlasMode === 'waterways' ? <Waterways /> : atlasMode === 'graph' ? <KnowledgeGraph /> : <MountainResources initialView={resourceView} />}
+            : atlasMode === 'bestiary' ? <Bestiary /> : atlasMode === 'waterways' ? <Waterways /> : atlasMode === 'graph' ? <KnowledgeGraph initialSelectedId={graphTargetId} /> : atlasMode === 'mythology' ? <MythologyExplorer onOpenGraph={(nodeId) => { setGraphTargetId(nodeId); setAtlasMode('graph'); }} /> : <MountainResources initialView={resourceView} />}
         </div>
       )}
     </section>
