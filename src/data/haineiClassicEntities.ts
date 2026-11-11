@@ -390,6 +390,8 @@ export const haineiClassicRelations: HaineiClassicRelation[] = [
   relation("hc-r167", "hc-north-sea", "hc-buju-mountain", "北海之内另记不钜之山", "又有不钜一作“距”之山"),
   relation("hc-r168", "hc-north-sea", "hc-xianggu-corpse", "北海之内记有相顾之尸", "名曰相顾之尸。"),
   relation("hc-r169", "hc-north-sea", "hc-youdu-mountain", "北海之内记有幽都之山", "北海之内，有山，名曰幽都之山"),
+  relation("hc-r170", "hc-north-sea", "hc-chaoxian", "朝鲜位于北海之隅", "北海之隅，有国名曰朝鲜"),
+  relation("hc-r171", "hc-gun", "hc-jiuzhou", "鲧与禹始布土以定九州", "禹、鲧是始布土，均定九州"),
 ];
 
 export const haineiClassicCrossLinks: HaineiClassicCrossLink[] = [
