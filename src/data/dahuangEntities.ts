@@ -132,6 +132,7 @@ export const dahuangEntities: DahuangEntity[] = [
   entity('dahuang-dong-jing', 'de-kui', '夔', '异兽', '苍身无角、一足，出入水则风雨；黄帝取其皮制鼓。', '其状如牛，苍身而无角，一足……其名曰夔。'),
   entity('dahuang-dong-jing', 'de-yellow-emperor', '黄帝', '神话人物', '得夔，以其皮为鼓，并以雷兽之骨击鼓。', '黄帝得之，以其皮为鼓。'),
   entity('dahuang-dong-jing', 'de-thunder-beast', '雷兽', '异兽', '其骨被用于击夔皮鼓。', '橛以雷兽之骨，声闻五百里。'),
+  entity('dahuang-dong-jing', 'de-sun-bathing-cycle', '十日浴日与轮值', '神话事件', '羲和浴日，十日载于乌而轮流出入汤谷。', '羲和方浴日于甘渊……汤谷上有扶木。一日方至，一日方出，皆载于乌。'),
 
   // 大荒南经
   entity('dahuang-nan-jing', 'ds-dijun', '帝俊', '神祇', '娥皇、季釐等神话人物的谱系中出现。', '帝俊妻娥皇，生此三身之国。帝俊生季釐。'),
@@ -219,6 +220,8 @@ export const dahuangEntities: DahuangEntity[] = [
   entity('dahuang-nan-jing', 'ds-three-zhu', '三骓', '异兽', '本篇记青马、赤马名三骓。', '有青马，有赤马，名曰三骓。'),
   entity('dahuang-nan-jing', 'ds-junren', '菌人', '异人', '本篇所记小人名。', '有小人，名曰菌人。'),
   entity('dahuang-nan-jing', 'ds-nanlei-mountain', '南类之山', '山', '有遗玉、青马、三骓、视肉、甘华与百谷。', '有南类之山，爰有遗玉、青马、三骓、视肉、甘华。'),
+  entity('dahuang-nan-jing', 'ds-yi-kills-zaochi', '羿杀凿齿', '神话事件', '本篇以一句话记载羿杀凿齿。', '有人曰凿齿，羿杀之。'),
+  entity('dahuang-nan-jing', 'ds-feng-tree-origin', '枫木由桎梏化生', '神话事件', '枫木被解释为蚩尤所弃桎梏所化。', '枫木，蚩尤所弃其桎梏，是为枫木。'),
 
   // 大荒西经
   entity('dahuang-xi-jing', 'dw-zhuanxu', '颛顼', '神话人物', '老童之父，太子长琴谱系的上代。', '颛顼生老童。'),
@@ -346,6 +349,7 @@ export const dahuangEntities: DahuangEntity[] = [
   entity('dahuang-xi-jing', 'dw-metal-mountain', '金之山', '山', '本篇所记山名。', '有金之山。'),
   entity('dahuang-xi-jing', 'dw-pianju-mountain', '偏句之山', '山', '西南大荒之隅所记山名；异文作偏勾。', '有偏句、常羊之山。', '保留“偏句/偏勾”异文。'),
   entity('dahuang-xi-jing', 'dw-changyang-mountain-2', '常羊之山', '山', '西南大荒之隅所记山名。', '有偏句、常羊之山。'),
+  entity('dahuang-xi-jing', 'dw-xiahoukai-ascends', '夏后开登天得乐', '神话事件', '夏后开上天三次，得到九辩、九歌并始歌九招。', '夏后开上三嫔于天，得九辩与九歌以下……开焉得始歌九招。'),
 
   // 大荒北经
   entity('dahuang-bei-jing', 'dn-fuyu-mountain', '附禺之山', '山', '位于东北海之外、河水之间；帝颛顼与九嫔葬于此。', '河水之闲，附禺之山，帝颛顼与九嫔葬焉。'),
@@ -443,7 +447,11 @@ export const dahuangEntities: DahuangEntity[] = [
   entity('dahuang-bei-jing', 'dn-boneless-person', '无骨人', '异人', '儋耳之子，无骨。', '有人无骨，儋耳之子。'),
   entity('dahuang-bei-jing', 'dn-zhangwei-mountain', '章尾山', '山', '赤水之北，有烛九阴之神。', '赤水之北，有章尾山。'),
   entity('dahuang-bei-jing', 'dn-zhulong', '烛龙', '神祇', '人面蛇身而赤，直目；暝则晦、视则明，又称烛九阴。', '是烛九阴，是谓烛龙。'),
-  entity('dahuang-bei-jing', 'dn-zhuyinyin', '烛九阴', '神祇', '章尾山之神，亦称烛龙。', '是烛九阴，是谓烛龙。')
+  entity('dahuang-bei-jing', 'dn-zhuyinyin', '烛九阴', '神祇', '章尾山之神，亦称烛龙。', '是烛九阴，是谓烛龙。'),
+  entity('dahuang-bei-jing', 'dn-kuafu-chases-sun', '夸父逐日', '神话事件', '夸父追逐日影至禺谷，欲饮河而不足，奔向大泽未至而死。', '夸父不量力，欲追日景，逮之于禺谷。将饮河而不足也，将走大泽，未至，死于此。'),
+  entity('dahuang-bei-jing', 'dn-yinglong-kills-two', '应龙杀蚩尤与夸父', '神话事件', '应龙杀蚩尤与夸父后不能复上，转居南方。', '应龙已杀蚩尤，又杀夸父，乃去南方处之。'),
+  entity('dahuang-bei-jing', 'dn-yu-kills-xiangyao', '禹杀相繇', '神话事件', '禹湮洪水、杀相繇，并多次填塞其地。', '禹湮洪水，杀相繇。禹湮之，三仞三沮。'),
+  entity('dahuang-bei-jing', 'dn-nuba-stops-rain', '女魃止雨', '神话事件', '黄帝令天女魃降下止雨；女魃不得复上，所居不雨。', '黄帝乃下天女曰魃，雨止。魃不得复上，所居不雨。')
 ];
 
 export const dahuangRelations: DahuangRelation[] = [
@@ -483,6 +491,8 @@ export const dahuangRelations: DahuangRelation[] = [
   { id: 'de-r33', fromId: 'de-liubo-mountain', toId: 'de-kui', relation: '夔居流波山', quote: '东海中有流波山……其上有兽……其名曰夔。' },
   { id: 'de-r34', fromId: 'de-yellow-emperor', toId: 'de-kui', relation: '黄帝得夔并以其皮为鼓', quote: '黄帝得之，以其皮为鼓。' },
   { id: 'de-r35', fromId: 'de-thunder-beast', toId: 'de-kui', relation: '雷兽之骨用作击鼓之槌', quote: '橛以雷兽之骨。' },
+  { id: 'de-r36', fromId: 'de-sun-bathing-cycle', toId: 'de-xihe', relation: '羲和主持浴日', quote: '有女子名曰羲和，方浴日于甘渊。' },
+  { id: 'de-r37', fromId: 'de-sun-bathing-cycle', toId: 'de-tanggu', relation: '十日轮流出入汤谷', quote: '汤谷上有扶木。一日方至，一日方出，皆载于乌。' },
 
   // 大荒南经
   { id: 'ds-r01', fromId: 'ds-sitian-mountain', toId: 'ds-red-water', relation: '赤水穷于汜天之山', quote: '南海之中，有汜天之山，赤水穷焉。' },
@@ -524,6 +534,10 @@ export const dahuangRelations: DahuangRelation[] = [
   { id: 'ds-r37', fromId: 'ds-tiantai-mountain', toId: 'ds-xihe', relation: '篇章接续，羲和浴日段落见于此', quote: '东南海之外，甘水之间，有羲和之国。' },
   { id: 'ds-r38', fromId: 'ds-gaiyou-mountain', toId: 'ds-ganzha', relation: '甘柤生于盖犹之山', quote: '有盖犹之山者，其上有甘柤。' },
   { id: 'ds-r39', fromId: 'ds-nanlei-mountain', toId: 'ds-three-zhu', relation: '南类之山有三骓', quote: '有南类之山，爰有遗玉、青马、三骓。' },
+  { id: 'ds-r40', fromId: 'ds-yi-kills-zaochi', toId: 'ds-yi', relation: '事件主体为羿', quote: '有人曰凿齿，羿杀之。' },
+  { id: 'ds-r41', fromId: 'ds-yi-kills-zaochi', toId: 'ds-zaochi', relation: '事件对象为凿齿', quote: '有人曰凿齿，羿杀之。' },
+  { id: 'ds-r42', fromId: 'ds-feng-tree-origin', toId: 'ds-chiyou', relation: '传说中的桎梏属于蚩尤', quote: '枫木，蚩尤所弃其桎梏。' },
+  { id: 'ds-r43', fromId: 'ds-feng-tree-origin', toId: 'ds-feng-tree', relation: '桎梏化为枫木', quote: '枫木，蚩尤所弃其桎梏，是为枫木。' },
 
   // 大荒西经
   { id: 'dw-r01', fromId: 'dw-buzhou', toId: 'dw-yellow-guardians', relation: '两黄兽守护不周山', quote: '有两黄兽守之。' },
@@ -568,6 +582,9 @@ export const dahuangRelations: DahuangRelation[] = [
   { id: 'dw-r40', fromId: 'dw-xiahou-kai', toId: 'dw-jiuge', relation: '夏后开得九歌', quote: '得九辩与九歌以下。' },
   { id: 'dw-r41', fromId: 'dw-lingjie', toId: 'dw-diren-country', relation: '灵恝生氐人', quote: '灵恝生氐人。' },
   { id: 'dw-r42', fromId: 'dw-yufu', toId: 'dw-zhuanxu', relation: '鱼妇叙事关联颛顼死而复苏', quote: '鱼妇……颛顼死即复苏。' },
+  { id: 'dw-r43', fromId: 'dw-xiahoukai-ascends', toId: 'dw-xiahou-kai', relation: '事件主体为夏后开', quote: '夏后开上三嫔于天，得九辩与九歌以下。' },
+  { id: 'dw-r44', fromId: 'dw-xiahoukai-ascends', toId: 'dw-jiubian', relation: '夏后开登天得九辩', quote: '得九辩与九歌以下。' },
+  { id: 'dw-r45', fromId: 'dw-xiahoukai-ascends', toId: 'dw-jiuge', relation: '夏后开登天得九歌', quote: '得九辩与九歌以下。' },
 
   // 大荒北经
   { id: 'dn-r01', fromId: 'dn-fuyu-mountain', toId: 'dn-zhuanxu', relation: '帝颛顼葬于附禺之山', quote: '附禺之山，帝颛顼与九嫔葬焉。' },
@@ -610,5 +627,14 @@ export const dahuangRelations: DahuangRelation[] = [
   { id: 'dn-r38', fromId: 'dn-nongming', toId: 'dn-white-dog', relation: '弄明生白犬', quote: '弄明生白犬。' },
   { id: 'dn-r39', fromId: 'dn-white-dog', toId: 'dn-quanrong', relation: '白犬有牝牡，是为犬戎', quote: '白犬有牝牡，是为犬戎。' },
   { id: 'dn-r40', fromId: 'dn-hengshi-mountain', toId: 'dn-ruomu', relation: '若木生于西北大荒诸山', quote: '上有赤树，青叶赤华，名曰若木。' },
-  { id: 'dn-r41', fromId: 'dn-zhangwei-mountain', toId: 'dn-zhulong', relation: '烛龙居章尾山', quote: '赤水之北，有章尾山。有神……是谓烛龙。' }
+  { id: 'dn-r41', fromId: 'dn-zhangwei-mountain', toId: 'dn-zhulong', relation: '烛龙居章尾山', quote: '赤水之北，有章尾山。有神……是谓烛龙。' },
+  { id: 'dn-r42', fromId: 'dn-kuafu-chases-sun', toId: 'dn-kuafu', relation: '事件主体为夸父', quote: '夸父不量力，欲追日景，逮之于禺谷。' },
+  { id: 'dn-r43', fromId: 'dn-kuafu-chases-sun', toId: 'dn-yugu', relation: '夸父逐日抵达禺谷', quote: '欲追日景，逮之于禺谷。' },
+  { id: 'dn-r44', fromId: 'dn-yinglong-kills-two', toId: 'dn-yinglong', relation: '事件主体为应龙', quote: '应龙已杀蚩尤，又杀夸父。' },
+  { id: 'dn-r45', fromId: 'dn-yinglong-kills-two', toId: 'dn-chiyou', relation: '事件对象包括蚩尤', quote: '应龙已杀蚩尤。' },
+  { id: 'dn-r46', fromId: 'dn-yinglong-kills-two', toId: 'dn-kuafu', relation: '事件对象包括夸父', quote: '又杀夸父。' },
+  { id: 'dn-r47', fromId: 'dn-yu-kills-xiangyao', toId: 'dn-xiangyao', relation: '事件对象为相繇', quote: '禹湮洪水，杀相繇。' },
+  { id: 'dn-r48', fromId: 'dn-nuba-stops-rain', toId: 'dn-nuba', relation: '事件主体为女魃', quote: '黄帝乃下天女曰魃，雨止。' },
+  { id: 'dn-r49', fromId: 'dn-nuba-stops-rain', toId: 'dn-fengbo', relation: '止雨前有风伯作风', quote: '蚩尤请风伯雨师，纵大风雨。黄帝乃下天女曰魃，雨止。' },
+  { id: 'dn-r50', fromId: 'dn-nuba-stops-rain', toId: 'dn-yushi', relation: '止雨前有雨师作雨', quote: '蚩尤请风伯雨师，纵大风雨。黄帝乃下天女曰魃，雨止。' }
 ];
