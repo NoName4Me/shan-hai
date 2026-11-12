@@ -36,7 +36,11 @@ function addNode(node: KnowledgeNode) {
   if (!nodes.has(node.id)) nodes.set(node.id, node);
 }
 function addEdge(edge: KnowledgeEdge) {
-  if (!edges.has(edge.id) && edge.from !== edge.to) edges.set(edge.id, edge);
+  if (edge.from === edge.to) return;
+  const duplicate = [...edges.values()].some(
+    (existing) => existing.from === edge.from && existing.to === edge.to && existing.relation === edge.relation
+  );
+  if (!duplicate) edges.set(edge.id, edge);
 }
 
 for (const route of mountainRoutes) {
@@ -194,7 +198,7 @@ for (const place of locations.filter((item) => !['nanshan-jing', 'xishan-jing', 
 }
 
 const seaMythicLinks = [
-  { placeId: 'kunlun', id: 'lower-capital', label: '帝之下都', relation: '原文称为', chapterId: 'hainei-xi-jing', chapterName: '海内西经', quote: '海内昆仑之虚，在西北，帝之下都。', sourceUrl: 'https://zh.wikisource.org/zh-hans/山海經/海內西經' }
+  { placeId: 'kunlun', id: 'lower-capital', label: '帝之下都', relation: '原文称为', placeLabel: '昆仑之虚', chapterId: 'hainei-xi-jing', chapterName: '海内西经', quote: '海内昆仑之虚，在西北，帝之下都。', sourceUrl: 'https://zh.wikisource.org/zh-hans/山海經/海內西經' }
 ];
 for (const item of seaMythicLinks) {
   const nodeId = 'mythic:' + item.id;
@@ -203,7 +207,7 @@ for (const item of seaMythicLinks) {
     label: item.label,
     kind: '神话意象',
     chapterName: item.chapterName,
-    description: item.relation + ' ' + item.placeId,
+    description: '原文将' + item.placeLabel + '称为“' + item.label + '”。',
     sourceUrl: item.sourceUrl,
     sourceText: item.quote
   });

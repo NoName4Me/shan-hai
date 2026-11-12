@@ -1,6 +1,7 @@
-import { useMemo, useState } from 'react';
+import { useEffect, useMemo } from 'react';
 import { getAtlasLocationIdForKnowledgeNode, getKnowledgeNeighbors, knowledgeEdges, knowledgeKinds, knowledgeNodes, type KnowledgeKind, type KnowledgeNode } from '../data/knowledgeGraph';
 import { dataAudit, dataAuditIssues } from '../data/dataAudit';
+import { useAppStore } from '../store';
 
 const kindColors: Record<KnowledgeKind, string> = {
   '山': '#d6bd91',
@@ -28,24 +29,41 @@ const positions = [
 ];
 
 export default function KnowledgeGraph({ initialSelectedId = 'south-qingqiu', onOpenMap }: { initialSelectedId?: string; onOpenMap?: (locationId: string) => void }) {
-  const [selectedId, setSelectedId] = useState(initialSelectedId);
-  const [kind, setKind] = useState<'全部' | KnowledgeKind>('全部');
-  const [query, setQuery] = useState('');
+  const selectedId = useAppStore((s) => s.graphSelectedId);
+  const setSelectedId = useAppStore((s) => s.setGraphSelectedId);
+  const setGraphTargetId = useAppStore((s) => s.setGraphTargetId);
+  const kind = useAppStore((s) => s.graphKind) as '全部' | KnowledgeKind;
+  const setKind = useAppStore((s) => s.setGraphKind);
+  const query = useAppStore((s) => s.graphQuery);
+  const setQuery = useAppStore((s) => s.setGraphQuery);
+
+  useEffect(() => {
+    setSelectedId(initialSelectedId);
+  }, [initialSelectedId, setSelectedId]);
   const selected = knowledgeNodes.find((node) => node.id === selectedId) ?? knowledgeNodes[0];
   const neighbors = useMemo(() => getKnowledgeNeighbors(selected.id), [selected.id]);
   const selectedAtlasLocationId = getAtlasLocationIdForKnowledgeNode(selected.id);
   const visibleNeighbors = neighbors.filter(({ node }) => kind === '全部' || node.kind === kind);
+  const graphNeighbors = useMemo(() => {
+    const seen = new Set<string>();
+    return visibleNeighbors.filter(({ node }) => {
+      if (seen.has(node.id)) return false;
+      seen.add(node.id);
+      return true;
+    });
+  }, [visibleNeighbors]);
   const matching = useMemo(() => {
     const q = query.trim().toLowerCase();
     if (!q) return [];
     return knowledgeNodes.filter((node) => [node.label, node.chapterName, node.description, node.kind].join(' ').toLowerCase().includes(q)).slice(0, 12);
   }, [query]);
-  const graphNodes = [{ node: selected, x: center.x, y: center.y }, ...visibleNeighbors.slice(0, 12).map(({ node }, index) => ({ node, x: positions[index][0], y: positions[index][1] }))];
+  const graphNodes = [{ node: selected, x: center.x, y: center.y }, ...graphNeighbors.slice(0, 12).map(({ node }, index) => ({ node, x: positions[index][0], y: positions[index][1] }))];
   const visibleIds = new Set(graphNodes.map((item) => item.node.id));
   const graphEdges = neighbors.filter(({ edge, node }) => visibleIds.has(node.id) && (edge.from === selected.id || edge.to === selected.id));
 
   const selectNode = (node: KnowledgeNode) => {
     setSelectedId(node.id);
+    setGraphTargetId(node.id);
     setQuery('');
   };
 
@@ -106,7 +124,7 @@ export default function KnowledgeGraph({ initialSelectedId = 'south-qingqiu', on
           {selected.sourceText && <blockquote>{selected.sourceText}</blockquote>}
           {selected.sourceUrl && <a href={selected.sourceUrl} target="_blank" rel="noreferrer">查阅原文出处 ↗</a>}
           {selectedAtlasLocationId && onOpenMap && <button className="graph-map-link" onClick={() => onOpenMap(selectedAtlasLocationId)}>在舆图中定位 ↗</button>}
-          <button className="graph-reset" onClick={() => { setSelectedId('south-qingqiu'); setKind('全部'); setQuery(''); }}>返回青丘起点</button>
+          <button className="graph-reset" onClick={() => { setSelectedId('south-qingqiu'); setGraphTargetId('south-qingqiu'); setKind('全部'); setQuery(''); }}>返回青丘起点</button>
         </aside>
       </div>
       <p className="route-method-note">图谱节点与连线均由当前结构化数据生成。山系相邻关系来自路线顺序；水系、物产、异兽及祀典来自对应条目。祭祀形貌只作为“神形记录”，不据此虚构神名。</p>

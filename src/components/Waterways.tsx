@@ -1,12 +1,16 @@
-import { useMemo, useState } from 'react';
+import { useMemo } from 'react';
 import { waterways } from '../data/waterways';
+import { useAppStore } from '../store';
 
 const chapters = ['全部', '南山经', '西山经', '北山经', '东山经', '中山经'] as const;
 
 export default function Waterways() {
-  const [query, setQuery] = useState('');
-  const [chapter, setChapter] = useState<(typeof chapters)[number]>('全部');
-  const [selectedId, setSelectedId] = useState('jiang-shui');
+  const query = useAppStore((s) => s.waterQuery);
+  const setQuery = useAppStore((s) => s.setWaterQuery);
+  const chapter = useAppStore((s) => s.waterChapter) as (typeof chapters)[number];
+  const setChapter = useAppStore((s) => s.setWaterChapter);
+  const selectedId = useAppStore((s) => s.waterId);
+  const setSelectedId = useAppStore((s) => s.setWaterId);
 
   const filtered = useMemo(() => {
     const normalized = query.trim().toLowerCase();

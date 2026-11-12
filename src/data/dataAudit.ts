@@ -14,12 +14,40 @@ const mountainIds = mountainRoutes.flatMap((route) => route.nodes.map((node) => 
 const routeIds = mountainRoutes.map((route) => route.id);
 const mountainIdSet = new Set(mountainIds);
 const routeIdSet = new Set(routeIds);
+const atlasLocationIds = locations.map((location) => location.id);
+const routeNodeByName = new Map(
+  mountainRoutes.flatMap((route) =>
+    route.nodes.map((node, index) => [route.id + ':' + node.name, { routeId: route.id, order: index + 1 }] as const)
+  )
+);
 
 export const dataAudit = {
   routeCount: mountainRoutes.length,
   mountainNodeCount: mountainIds.length,
   uniqueMountainNodeCount: mountainIdSet.size,
   duplicateMountainNodeIds: mountainIds.filter((id, index) => mountainIds.indexOf(id) !== index),
+  duplicateRouteIds: routeIds.filter((id, index) => routeIds.indexOf(id) !== index),
+  duplicateAtlasLocationIds: atlasLocationIds.filter((id, index) => atlasLocationIds.indexOf(id) !== index),
+  duplicateWaterwayIds: waterways.map((item) => item.id).filter((id, index, all) => all.indexOf(id) !== index),
+  duplicateResourceIds: mountainResources.map((item) => item.id).filter((id, index, all) => all.indexOf(id) !== index),
+  duplicateCreatureIds: bestiary.map((item) => item.id).filter((id, index, all) => all.indexOf(id) !== index),
+  duplicateRitualIds: mountainRituals.map((item) => item.id).filter((id, index, all) => all.indexOf(id) !== index),
+  invalidAtlasRouteLinks: locations.filter((location) => location.routeId && !routeIdSet.has(location.routeId)).map((location) => location.id),
+  mismatchedAtlasRouteOrders: locations.flatMap((location) => {
+    if (!location.routeId || location.routeOrder === undefined) return [];
+    const routeNode = routeNodeByName.get(location.routeId + ':' + location.name);
+    return routeNode && routeNode.order !== location.routeOrder
+      ? [location.id + '（应为 ' + routeNode.order + '，当前 ' + location.routeOrder + '）']
+      : [];
+  }),
+  missingAtlasLocationSources: locations.filter((location) => !location.sourceUrl.startsWith('https://')).map((location) => location.id),
+  duplicateGraphNodeIds: knowledgeNodes.map((node) => node.id).filter((id, index, all) => all.indexOf(id) !== index),
+  duplicateGraphEdgeIds: knowledgeEdges.map((edge) => edge.id).filter((id, index, all) => all.indexOf(id) !== index),
+  duplicateGraphRelations: [...new Set(
+    knowledgeEdges
+      .map((edge) => edge.from + '|' + edge.to + '|' + edge.relation)
+      .filter((key, index, all) => all.indexOf(key) !== index)
+  )],
   orphanWaterways: waterways.filter((item) => !mountainIdSet.has(item.mountainId)).map((item) => item.id),
   orphanResources: mountainResources.filter((item) => !mountainIdSet.has(item.mountainId)).map((item) => item.id),
   orphanCreatures: bestiary.filter((item) => !mountainIdSet.has(item.mountainId)).map((item) => item.id),
@@ -73,6 +101,18 @@ export const dataAudit = {
 };
 
 export const dataAuditIssues = [
+  ...dataAudit.duplicateRouteIds.map((id) => '重复路线 ID：' + id),
+  ...dataAudit.duplicateAtlasLocationIds.map((id) => '重复舆图地点 ID：' + id),
+  ...dataAudit.duplicateWaterwayIds.map((id) => '重复水系 ID：' + id),
+  ...dataAudit.duplicateResourceIds.map((id) => '重复物产 ID：' + id),
+  ...dataAudit.duplicateCreatureIds.map((id) => '重复异兽 ID：' + id),
+  ...dataAudit.duplicateRitualIds.map((id) => '重复祀典 ID：' + id),
+  ...dataAudit.invalidAtlasRouteLinks.map((id) => '舆图地点引用了不存在的路线：' + id),
+  ...dataAudit.mismatchedAtlasRouteOrders.map((id) => '舆图地点路线次序与山经节点不一致：' + id),
+  ...dataAudit.missingAtlasLocationSources.map((id) => '舆图地点缺少原文链接：' + id),
+  ...dataAudit.duplicateGraphNodeIds.map((id) => '重复图谱节点 ID：' + id),
+  ...dataAudit.duplicateGraphEdgeIds.map((id) => '重复图谱关系 ID：' + id),
+  ...dataAudit.duplicateGraphRelations.map((key) => '重复图谱关系：' + key),
   ...dataAudit.duplicateMountainNodeIds.map((id) => '重复山节点 ID：' + id),
   ...dataAudit.orphanWaterways.map((id) => '水系未关联山节点：' + id),
   ...dataAudit.orphanResources.map((id) => '物产未关联山节点：' + id),

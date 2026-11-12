@@ -1,4 +1,4 @@
-import { useMemo, useState } from 'react';
+import { useMemo } from 'react';
 import { chapters } from '../atlas';
 import {
   getKnowledgeNeighbors,
@@ -7,8 +7,8 @@ import {
   type KnowledgeEdge,
   type KnowledgeNode
 } from '../data/knowledgeGraph';
+import { useAppStore } from '../store';
 
-type ExplorerMode = 'events' | 'lineage';
 type Props = { onOpenGraph: (nodeId: string) => void };
 type EventRow = { node: KnowledgeNode; related: ReturnType<typeof getKnowledgeNeighbors> };
 type LineageRow = { edge: KnowledgeEdge; from: KnowledgeNode; to: KnowledgeNode };
@@ -22,9 +22,12 @@ function isLineageRelation(relation: string) {
 }
 
 export default function MythologyExplorer({ onOpenGraph }: Props) {
-  const [mode, setMode] = useState<ExplorerMode>('events');
-  const [query, setQuery] = useState('');
-  const [chapterFilter, setChapterFilter] = useState('');
+  const mode = useAppStore((s) => s.mythologyMode);
+  const setMode = useAppStore((s) => s.setMythologyMode);
+  const query = useAppStore((s) => s.mythologyQuery);
+  const setQuery = useAppStore((s) => s.setMythologyQuery);
+  const chapterFilter = useAppStore((s) => s.mythologyChapter);
+  const setChapterFilter = useAppStore((s) => s.setMythologyChapter);
 
   const eventRows = useMemo<EventRow[]>(() => knowledgeNodes
     .filter((node) => node.kind === '神话事件')

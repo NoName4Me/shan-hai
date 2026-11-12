@@ -1,18 +1,29 @@
-import { useMemo, useState } from 'react';
+import { useEffect, useMemo } from 'react';
 import { mountainResources, type ResourceCategory } from '../data/mountainResources';
 import { mountainRituals } from '../data/mountainRituals';
 import { getRitualFacets } from '../data/ritualFacets';
+import { useAppStore } from '../store';
 
 const categories = ['全部', '植物', '矿物', '动物', '其他'] as const;
 const chapters = ['全部', '南山经', '西山经', '北山经', '东山经', '中山经'] as const;
 
 export default function MountainResources({ initialView = 'resources' }: { initialView?: 'resources' | 'rituals' }) {
-  const [view, setView] = useState<'resources' | 'rituals'>(initialView);
-  const [query, setQuery] = useState('');
-  const [category, setCategory] = useState<'全部' | ResourceCategory>('全部');
-  const [chapter, setChapter] = useState<(typeof chapters)[number]>('全部');
-  const [selectedId, setSelectedId] = useState('kunlun-shatang');
-  const [selectedRitualId, setSelectedRitualId] = useState('ritual-south-1');
+  const view = useAppStore((s) => s.resourceView);
+  const setView = useAppStore((s) => s.setResourceView);
+  const query = useAppStore((s) => s.resourceQuery);
+  const setQuery = useAppStore((s) => s.setResourceQuery);
+  const category = useAppStore((s) => s.resourceCategory) as '全部' | ResourceCategory;
+  const setCategory = useAppStore((s) => s.setResourceCategory);
+  const chapter = useAppStore((s) => s.ritualChapter) as (typeof chapters)[number];
+  const setChapter = useAppStore((s) => s.setRitualChapter);
+  const selectedId = useAppStore((s) => s.resourceId);
+  const setSelectedId = useAppStore((s) => s.setResourceId);
+  const selectedRitualId = useAppStore((s) => s.ritualId);
+  const setSelectedRitualId = useAppStore((s) => s.setRitualId);
+
+  useEffect(() => {
+    setView(initialView);
+  }, [initialView, setView]);
 
   const filteredResources = useMemo(() => {
     const normalized = query.trim().toLowerCase();

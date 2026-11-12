@@ -27,6 +27,7 @@ export type AtlasLocation = {
   relation: string;
   note: string;
   sourceUrl: string;
+  graphNodeId?: string;
   routeId?: string;
   routeOrder?: number;
   distanceFromPreviousLi?: number;
@@ -76,8 +77,9 @@ export const locations: AtlasLocation[] = [
     relation: '原文以“又东三百里”记载其相对前一山的位置。',
     note: '这里仅保留原文的行进次序与里程，不据此推定现代地理坐标。',
     sourceUrl: 'https://zh.wikisource.org/zh-hans/南山經',
-    routeId: 'que-shan-first',
-    routeOrder: 1,
+    graphNodeId: 'south-jishan',
+    routeId: 'south-que',
+    routeOrder: 7,
     distanceFromPreviousLi: 300
   },
   {
@@ -93,8 +95,9 @@ export const locations: AtlasLocation[] = [
     relation: '由基山向东三百里。原文另记英水出于此山，南流注于即翼之泽。',
     note: '这是《南山经》中的山名。它与《海外东经》的“青丘国”是两个不同文本条目，现阶段不将二者合并为同一地点。',
     sourceUrl: 'https://zh.wikisource.org/zh-hans/南山經',
-    routeId: 'que-shan-first',
-    routeOrder: 2,
+    graphNodeId: 'south-qingqiu',
+    routeId: 'south-que',
+    routeOrder: 8,
     distanceFromPreviousLi: 300,
     sceneId: 'qingqiu'
   },
@@ -111,8 +114,9 @@ export const locations: AtlasLocation[] = [
     relation: '由青丘之山向东三百五十里。',
     note: '这里呈现的是文本中的相邻关系；图上距离不按三百五十里比例绘制。',
     sourceUrl: 'https://zh.wikisource.org/zh-hans/南山經',
-    routeId: 'que-shan-first',
-    routeOrder: 3,
+    graphNodeId: 'south-jiwei',
+    routeId: 'south-que',
+    routeOrder: 9,
     distanceFromPreviousLi: 350
   },
   {
@@ -127,7 +131,8 @@ export const locations: AtlasLocation[] = [
     quote: '海内昆仑之虚，在西北，帝之下都。昆仑之虚，方八百里，高万仞。',
     relation: '原文明言“在西北”，并记其规模与神异结构。',
     note: '“西北”是文本方位信息；地图上的点位仅用于视觉导航，不等同于现代地理定位。',
-    sourceUrl: 'https://zh.wikisource.org/zh-hans/山海經/海內西經'
+    sourceUrl: 'https://zh.wikisource.org/zh-hans/山海經/海內西經',
+    graphNodeId: 'place:kunlun'
   },
   {
     id: 'zhongshan',
@@ -141,7 +146,8 @@ export const locations: AtlasLocation[] = [
     quote: '锺山之神名曰烛阴……在无启之东……居锺山下。',
     relation: '烛阴居钟山下；钟山位于无启之国以东。',
     note: '这里展示的是神祇与地点的文本关联，并不把“钟山”强行对应到现代同名山脉。',
-    sourceUrl: 'https://zh.wikisource.org/zh-hans/山海經/海外北經'
+    sourceUrl: 'https://zh.wikisource.org/zh-hans/山海經/海外北經',
+    graphNodeId: 'place:zhongshan'
   },
   {
     id: 'buzhou',
@@ -155,7 +161,8 @@ export const locations: AtlasLocation[] = [
     quote: '西北海之外，大荒之隅，有山而不合，名曰不周。',
     relation: '位于“西北海之外，大荒之隅”。',
     note: '原文给出的是宏观区域描述，地图点位属于概念性排布。',
-    sourceUrl: 'https://zh.wikisource.org/zh-hans/山海經/大荒西經'
+    sourceUrl: 'https://zh.wikisource.org/zh-hans/山海經/大荒西經',
+    graphNodeId: 'place:buzhou'
   },
   {
     id: 'qingqiu-country',
@@ -169,7 +176,8 @@ export const locations: AtlasLocation[] = [
     quote: '青丘国在其北，其人食五谷，衣丝帛。',
     relation: '承接朝阳之谷等条目，原文另有“一曰在朝阳北”的异文。',
     note: '这是《海外东经》的“青丘国”，与《南山经》的“青丘之山”分卷记载，不能仅凭同名就认定为同一地点。',
-    sourceUrl: 'https://zh.wikisource.org/zh-hans/山海經/海外東經'
+    sourceUrl: 'https://zh.wikisource.org/zh-hans/山海經/海外東經',
+    graphNodeId: 'place:qingqiu-country'
   },
   {
     id: 'fusang',
@@ -183,7 +191,8 @@ export const locations: AtlasLocation[] = [
     quote: '下有汤谷。汤谷上有扶桑，十日所浴……',
     relation: '原文记在黑齿国以北，扶桑生于汤谷之上，居水中。',
     note: '地图锚点以扶桑为名；关系图谱将汤谷（水域）与扶桑（神木）拆分为两个实体。',
-    sourceUrl: 'https://zh.wikisource.org/zh-hans/山海經/海外東經'
+    sourceUrl: 'https://zh.wikisource.org/zh-hans/山海經/海外東經',
+    graphNodeId: 'place:fusang'
   }
 ];
 

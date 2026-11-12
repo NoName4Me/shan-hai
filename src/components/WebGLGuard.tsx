@@ -1,6 +1,7 @@
-import { Component, useCallback, useEffect, useRef, useState, type ReactNode } from 'react';
-import Qingqiu from './Qingqiu';
+import { Component, Suspense, lazy, useCallback, useEffect, useRef, useState, type ReactNode } from 'react';
 import QingqiuFallback from './QingqiuFallback';
+
+const Qingqiu = lazy(() => import('./Qingqiu'));
 
 type FailureReason = 'unavailable' | 'context-lost' | 'renderer-error';
 type Status = 'checking' | 'ready' | 'failed';
@@ -92,7 +93,9 @@ export default function WebGLGuard() {
     {status === 'failed' && <QingqiuFallback reason={reason} onRetry={retry} />}
     {status === 'ready' && (
       <RendererBoundary key={attempt} onError={handleRendererError}>
-        <Qingqiu />
+        <Suspense fallback={<div className="webgl-loading" role="status">正在进入青丘之山…</div>}>
+          <Qingqiu />
+        </Suspense>
       </RendererBoundary>
     )}
   </div>;

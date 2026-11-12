@@ -1,14 +1,23 @@
-import { useState } from 'react';
 import { mountainRoutes } from '../data/mountainRoutes';
 import { bestiary } from '../data/bestiary';
 import { waterways } from '../data/waterways';
 import { mountainResources } from '../data/mountainResources';
 import { mountainRituals } from '../data/mountainRituals';
+import { useAppStore } from '../store';
 
-export default function MountainRoutes({ onOpenBestiary, onOpenResources, onOpenWaterways, onOpenRituals }: { onOpenBestiary: () => void; onOpenResources: () => void; onOpenWaterways: () => void; onOpenRituals: () => void }) {
-  const [routeId, setRouteId] = useState(mountainRoutes[0].id);
+type Props = {
+  onOpenBestiary: (entryId?: string) => void;
+  onOpenResources: (entryId?: string) => void;
+  onOpenWaterways: (entryId?: string) => void;
+  onOpenRituals: (entryId?: string) => void;
+};
+
+export default function MountainRoutes({ onOpenBestiary, onOpenResources, onOpenWaterways, onOpenRituals }: Props) {
+  const routeId = useAppStore((s) => s.routeId);
+  const setRouteId = useAppStore((s) => s.setRouteId);
   const route = mountainRoutes.find((item) => item.id === routeId) ?? mountainRoutes[0];
-  const [selectedNodeId, setSelectedNodeId] = useState(route.nodes[0].id);
+  const selectedNodeId = useAppStore((s) => s.routeNodeId);
+  const setSelectedNodeId = useAppStore((s) => s.setRouteNodeId);
   const selectedNode = route.nodes.find((node) => node.id === selectedNodeId) ?? route.nodes[0];
   const relatedCreatures = bestiary.filter((entry) => selectedNode.creatureIds?.includes(entry.id));
   const recordedSum = route.nodes.reduce((sum, node) => sum + (node.distanceLi ?? 0), 0);
@@ -71,14 +80,14 @@ export default function MountainRoutes({ onOpenBestiary, onOpenResources, onOpen
             ? '由前一山向' + selectedNode.direction + '行进 ' + selectedNode.distanceLi + ' 里'
             : selectedNode.kind === '路段' ? '原文记载的水行、流沙或其他特殊路段。' : '本段路线的起始山名，原文未在此节点前标注里程。')}</p>
           {selectedNode.resourceSummary && <div className="route-resource-summary"><small>原文物产 / 地理记录</small><p>{selectedNode.resourceSummary}</p></div>}
-          {relatedRivers.length > 0 && <div className="route-creatures"><small>此山关联水系</small><div>{relatedRivers.map((river) => <span key={river.id}>{river.name}</span>)}</div><button onClick={onOpenWaterways}>查看水系图谱 ↗</button></div>}
-          {relatedResources.length > 0 && <div className="route-creatures"><small>此山物产索引</small><div>{relatedResources.map((resource) => <span key={resource.id}>{resource.name}</span>)}</div><button onClick={onOpenResources}>查看山产志 ↗</button></div>}
-          {relatedRitual && <div className="route-creatures route-ritual-preview"><small>本段山中祀典</small><p>{relatedRitual.ritualText}</p><button onClick={onOpenRituals}>查看本段祀典 ↗</button></div>}
+          {relatedRivers.length > 0 && <div className="route-creatures"><small>此山关联水系</small><div>{relatedRivers.map((river) => <button key={river.id} onClick={() => onOpenWaterways(river.id)}>{river.name}</button>)}</div><button onClick={() => onOpenWaterways(relatedRivers[0].id)}>查看水系图谱 ↗</button></div>}
+          {relatedResources.length > 0 && <div className="route-creatures"><small>此山物产索引</small><div>{relatedResources.map((resource) => <button key={resource.id} onClick={() => onOpenResources(resource.id)}>{resource.name}</button>)}</div><button onClick={() => onOpenResources(relatedResources[0].id)}>查看山产志 ↗</button></div>}
+          {relatedRitual && <div className="route-creatures route-ritual-preview"><small>本段山中祀典</small><p>{relatedRitual.ritualText}</p><button onClick={() => onOpenRituals(relatedRitual.id)}>查看本段祀典 ↗</button></div>}
           {relatedCreatures.length > 0 ? (
             <div className="route-creatures">
               <small>此山相关异兽</small>
-              <div>{relatedCreatures.map((entry) => <span key={entry.id}>{entry.name}</span>)}</div>
-              <button onClick={onOpenBestiary}>打开异兽图鉴 ↗</button>
+              <div>{relatedCreatures.map((entry) => <button key={entry.id} onClick={() => onOpenBestiary(entry.id)}>{entry.name}</button>)}</div>
+              <button onClick={() => onOpenBestiary(relatedCreatures[0].id)}>打开异兽图鉴 ↗</button>
             </div>
           ) : (
             <p className="route-empty-creatures">当前首批图鉴尚未收录此山的异兽条目；不代表原文没有相关记载。</p>

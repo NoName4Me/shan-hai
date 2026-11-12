@@ -1,8 +1,9 @@
-import { useEffect, useRef } from 'react';
+import { Suspense, lazy, useEffect, useRef } from 'react';
 import gsap from 'gsap';
 import Atlas from './components/Atlas';
-import WebGLGuard from './components/WebGLGuard';
 import { useAppStore } from './store';
+
+const WebGLGuard = lazy(() => import('./components/WebGLGuard'));
 
 function App() {
   const view=useAppStore((s)=>s.view);
@@ -35,7 +36,7 @@ function App() {
         <Atlas/>
         <footer className="site-footer"><span>卷帙十八 · 世界尚在生成</span><span>MYTHICAL RECONSTRUCTION / NOT A HISTORICAL MAP</span></footer>
       </> : <>
-        <div className="world-canvas"><WebGLGuard/></div>
+        <div className="world-canvas"><Suspense fallback={<div className="webgl-loading" role="status">正在进入青丘之山…</div>}><WebGLGuard/></Suspense></div>
         <div className="world-vignette" aria-hidden="true"/>
         <div className="world-heading">
           <div className="eyebrow"><span className="eyebrow-line"/> THE FIRST REALM · SOUTHERN MOUNTAINS</div>
@@ -51,6 +52,10 @@ function App() {
           <blockquote>“有兽焉，其状如狐而九尾。”</blockquote>
           <p>原文记载青丘山有九尾狐。本场景是依据文本意象进行的艺术性空间重构，并非原书地理形貌的确定复原。</p>
           <div className="info-status">原文依据：青丘山、九尾狐 ｜ 视觉呈现：概念设计</div>
+          <div className="info-actions">
+            <a href="https://zh.wikisource.org/zh-hans/山海經/南山經" target="_blank" rel="noreferrer">查看《南山经》原文 ↗</a>
+            <button type="button" onClick={returnToAtlas}>返回舆图</button>
+          </div>
         </aside>}
       </>}
     </div>

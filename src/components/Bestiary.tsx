@@ -1,10 +1,14 @@
-import { useMemo, useState } from 'react';
+import { useMemo } from 'react';
 import { bestiary, creatureKinds, type CreatureKind } from '../data/bestiary';
+import { useAppStore } from '../store';
 
 export default function Bestiary() {
-  const [query, setQuery] = useState('');
-  const [kind, setKind] = useState<'全部' | CreatureKind>('全部');
-  const [selectedId, setSelectedId] = useState('jiuweihu');
+  const query = useAppStore((s) => s.bestiaryQuery);
+  const setQuery = useAppStore((s) => s.setBestiaryQuery);
+  const kind = useAppStore((s) => s.bestiaryKind) as '全部' | CreatureKind;
+  const setKind = useAppStore((s) => s.setBestiaryKind);
+  const selectedId = useAppStore((s) => s.bestiaryId);
+  const setSelectedId = useAppStore((s) => s.setBestiaryId);
 
   const filtered = useMemo(() => {
     const normalized = query.trim().toLowerCase();
