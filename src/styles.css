@@ -461,3 +461,51 @@ h1,h2,p{margin-top:0}.atlas-hero h1,.world-heading h1{font-family:"Noto Serif SC
 
 .place-graph-link{display:inline-block;margin:0 0 0 12px;padding:0;border:0;border-bottom:1px solid rgba(226,200,155,.4);background:transparent;color:#e2c89b;font-size:10px;letter-spacing:.06em}
 .graph-map-link{align-self:flex-start;margin-top:10px;padding:7px 9px;border:1px solid rgba(216,190,145,.35);background:rgba(218,190,144,.07);color:#dfc49a;font-size:9px}
+
+
+/* 青丘试境：矿石与湿墨视觉体系。此块仅作用于三维试境，不修改资料/舆图主题。 */
+.app.qingqiu .world-vignette{
+  background:linear-gradient(90deg,rgba(16,23,30,.7),rgba(19,25,32,.16) 42%,transparent 72%),
+    linear-gradient(0deg,rgba(12,18,25,.67),transparent 26%,transparent 78%,rgba(14,20,27,.27));
+}
+.app.qingqiu .world-heading h1{color:#e7e4dc;text-shadow:0 4px 32px rgba(11,17,24,.5)}
+.app.qingqiu .world-heading h1 span{color:#bfc7c3}
+.app.qingqiu .world-heading p{color:#d6d0c4}
+.app.qingqiu .world-heading .eyebrow{color:#d1a39a}
+.app.qingqiu .world-actions{
+  position:absolute;right:clamp(25px,7vw,110px);bottom:35px;z-index:5;
+  display:flex;align-items:center;gap:10px;
+}
+.app.qingqiu .world-actions button{
+  position:static;min-width:0;display:flex;align-items:center;gap:18px;justify-content:space-between;
+  padding:13px 17px;background:rgba(20,26,33,.84);border:1px solid rgba(221,218,204,.42);
+  color:#e8e4d8;font:12px "Noto Serif SC",serif;letter-spacing:.11em;
+  backdrop-filter:blur(12px);cursor:pointer;transition:border-color .2s,background .2s,transform .2s;
+}
+.app.qingqiu .world-actions button:hover,.app.qingqiu .world-actions button:focus-visible{
+  border-color:#c68e7d;background:rgba(60,37,40,.9);transform:translateY(-2px);
+  outline-offset:4px;
+}
+.app.qingqiu .world-awaken-button span{font:16px Georgia,serif;color:#d7a394}
+.app.qingqiu .world-info-button span{font:16px Georgia,serif;color:#d7d0c1}
+.app.qingqiu .world-guide{color:#d1cbc1;text-shadow:0 1px 9px #12181e}
+.app.qingqiu .guide-dot{background:#a65b51;box-shadow:0 0 12px rgba(166,91,81,.55)}
+.app.qingqiu .info-panel{background:rgba(21,29,36,.96);border-color:rgba(191,162,150,.46)}
+.app.qingqiu .info-kicker,.app.qingqiu .info-source{color:#c6978b}
+.app.qingqiu .info-panel h2{color:#e9e3d8}
+.app.qingqiu .info-panel blockquote{border-left-color:#a65b51}
+@media(max-width:850px){
+  .app.qingqiu .world-actions{right:22px;bottom:70px}
+  .app.qingqiu .world-guide{bottom:24px;left:22px;font-size:10px}
+  .app.qingqiu .world-actions button{font-size:11px;padding:11px 13px;gap:9px}
+}
+@media(max-width:550px){
+  .app.qingqiu .world-heading{top:125px;left:22px}
+  .app.qingqiu .world-heading h1{font-size:48px}
+  .app.qingqiu .world-heading p{font-size:11px}
+  .app.qingqiu .world-actions{bottom:65px;left:22px;right:auto}
+  .app.qingqiu .world-guide{bottom:25px;max-width:calc(100% - 44px)}
+}
+@media(prefers-reduced-motion:reduce){
+  .app.qingqiu .world-actions button{transition:none}
+}

@@ -11,66 +11,38 @@ const descriptions: Record<FailureReason, string> = {
 export default function QingqiuFallback({reason,onRetry}:{reason:FailureReason;onRetry:()=>void}) {
   const returnToAtlas = useAppStore((s)=>s.returnToAtlas);
   return <div className="qingqiu-fallback">
-    <svg className="fallback-landscape" viewBox="0 0 1200 760" preserveAspectRatio="xMidYMid slice" role="img" aria-label="青丘之山二维意境图：远山、云海与九尾狐">
+    <svg className="fallback-landscape" viewBox="0 0 1200 760" preserveAspectRatio="xMidYMid slice" role="img" aria-label="青丘之山墨骨风格二维场景：矿石山脊、巨月与九尾狐">
       <defs>
-        <linearGradient id="fallback-sky" x1="0" y1="0" x2="0" y2="1">
-          <stop offset="0" stopColor="#11152b"/>
-          <stop offset=".44" stopColor="#33283f"/>
-          <stop offset=".76" stopColor="#8b503b"/>
-          <stop offset="1" stopColor="#d08247"/>
+        <linearGradient id="ink-sky" x1="0" y1="0" x2="0" y2="1">
+          <stop stopColor="#1a2530"/><stop offset="0.68" stopColor="#505963"/><stop offset="1" stopColor="#777b79"/>
         </linearGradient>
-        <linearGradient id="fallback-hills" x1="0" y1="0" x2="0" y2="1">
-          <stop offset="0" stopColor="#4a4652"/>
-          <stop offset="1" stopColor="#252b34"/>
-        </linearGradient>
-        <linearGradient id="fallback-lake" x1="0" y1="0" x2="0" y2="1">
-          <stop offset="0" stopColor="#b46c48"/>
-          <stop offset=".28" stopColor="#4c4a54"/>
-          <stop offset="1" stopColor="#17232f"/>
-        </linearGradient>
-        <radialGradient id="fallback-halo">
-          <stop stopColor="#ffd18b" stopOpacity=".66"/>
-          <stop offset=".42" stopColor="#e9955b" stopOpacity=".25"/>
-          <stop offset="1" stopColor="#e9955b" stopOpacity="0"/>
-        </radialGradient>
-        <linearGradient id="fallback-light" x1="0" y1="0" x2="0" y2="1">
-          <stop stopColor="#ffd99a" stopOpacity=".24"/>
-          <stop offset="1" stopColor="#ffd99a" stopOpacity="0"/>
+        <linearGradient id="ink-tail" x1="0" y1="0" x2="1" y2="1">
+          <stop stopColor="#ece7db"/><stop offset=".55" stopColor="#8e9694"/><stop offset="1" stopColor="#202b34"/>
         </linearGradient>
       </defs>
-      <rect width="1200" height="760" fill="url(#fallback-sky)"/>
-      <ellipse cx="640" cy="265" rx="260" ry="210" fill="url(#fallback-halo)"/>
-      <circle cx="650" cy="260" r="72" fill="#ffd18b" opacity=".72"/>
-      <path d="M0 445L100 365L190 396L310 270L415 365L555 243L680 381L806 249L911 359L1004 310L1200 440V760H0Z" fill="#39343f"/>
-      <path d="M0 502L134 387L275 465L442 340L562 427L695 316L830 448L955 345L1100 438L1200 395V760H0Z" fill="url(#fallback-hills)"/>
-      <path d="M0 508Q201 486 400 505T797 496T1200 512V760H0Z" fill="#5b5349" opacity=".36"/>
-      <path d="M0 585Q255 538 508 571T1200 552V760H0Z" fill="url(#fallback-lake)"/>
-      <path d="M0 626Q280 586 610 617T1200 602" fill="none" stroke="#f0b878" strokeWidth="2" opacity=".42"/>
-      <path d="M0 662Q330 645 663 660T1200 639" fill="none" stroke="#d8a478" strokeWidth="1" opacity=".24"/>
-      <path d="M0 570Q255 526 508 559T1200 540V760H0Z" fill="url(#fallback-light)" opacity=".28"/>
-      <g opacity=".7" fill="#1a222b">
-        <path d="M132 579l23-89 23 89h-12l21 23h-65l21-23z"/>
-        <path d="M230 580l18-70 18 70h-10l16 21h-49l15-21z"/>
-        <path d="M1006 579l26-106 26 106h-14l22 27h-70l22-27z"/>
-        <path d="M1096 584l18-74 19 74h-10l16 20h-51l18-20z"/>
-      </g>
-      <g transform="translate(670 530)">
-        <ellipse cx="0" cy="62" rx="118" ry="18" fill="#101a24" opacity=".55"/>
+      <rect width="1200" height="760" fill="url(#ink-sky)"/>
+      <circle cx="360" cy="215" r="97" fill="#d7d3c9" opacity=".92"/>
+      <path d="M0 490L115 330L185 418L310 220L420 395L550 254L680 436L820 225L970 390L1080 300L1200 468V760H0Z" fill="#35404a"/>
+      <path d="M0 535L140 435L250 508L405 373L510 472L685 339L825 498L970 372L1130 485L1200 450V760H0Z" fill="#4b555c"/>
+      <path d="M0 627Q320 535 620 610T1200 574V760H0Z" fill="#1e2b33"/>
+      <path d="M0 675Q310 615 620 663T1200 636" fill="none" stroke="#a6aba5" strokeWidth="10" opacity=".28"/>
+      <path d="M380 640L555 570L835 564L1020 640L808 682L560 682Z" fill="#7a807d"/>
+      <path d="M555 682L808 682L1020 640V710L793 739L553 730Z" fill="#27313a"/>
+      <path d="M435 638Q570 609 780 629" fill="none" stroke="#ad655b" strokeWidth="3" opacity=".72"/>
+      <g transform="translate(704 565)">
         {Array.from({length:9},(_,i)=>{
-          const dx=(i-4)*21;
-          return <path key={i} d={`M0 22Q${dx*.8} -80 ${dx*1.2} -127T${dx*1.55} -170`}
-            fill="none" stroke={i%2?'#f7e9d2':'#ddc9ae'} strokeWidth="16" strokeLinecap="round" opacity=".92"/>;
+          const s=(i-4)/4;
+          const x=s*200;
+          const y=-135-Math.cos(s*Math.PI/2)*55;
+          return <path key={i}
+            d={'M -8 -12 Q '+(x*.24)+' -74 '+(x*.68)+' '+(y+32)+' Q '+x+' '+(y-45)+' '+(x+s*24)+' '+(y-14)+' Q '+(x*.68+13)+' '+(y+40)+' 10 -10 Z'}
+            fill="url(#ink-tail)" stroke={i%3===0?'#b36c60':'#262e34'} strokeWidth="2"/>;
         })}
-        <ellipse cx="0" cy="9" rx="42" ry="58" fill="#f3ead9"/>
-        <path d="M-28-20Q-49-63-31-80L-16-58L16-58L31-80Q49-63 28-20Z" fill="#f5eadb"/>
-        <path d="M-28-80l7 23-13-9zM28-80l-7 23 13-9z" fill="#bf9d92"/>
-        <circle cx="-14" cy="-39" r="2.3" fill="#344a4a"/>
-        <circle cx="14" cy="-39" r="2.3" fill="#344a4a"/>
-        <path d="M-18 55l-11 38M18 55l11 38" stroke="#f3ead9" strokeWidth="14" strokeLinecap="round"/>
-      </g>
-      <g fill="#ffd18b" opacity=".72">
-        <circle cx="394" cy="350" r="2"/><circle cx="458" cy="438" r="1.3"/>
-        <circle cx="733" cy="390" r="2"/><circle cx="919" cy="450" r="1.5"/>
+        <path d="M-62-56Q-64-100-20-113L25-112Q61-94 58-49L70 5L-60 5Z" fill="#e4e1d8"/>
+        <path d="M-43-111L-56-166L-15-135L13-140L49-167L42-106Z" fill="#d8d9d3" stroke="#242b31" strokeWidth="5"/>
+        <path d="M-26-117L-19-126L-10-117ZM13-117L23-126L30-117Z" fill="#b66b60"/>
+        <path d="M-47-34L-62 44L-45 75L-28 30L-16 8M41-34L59 44L43 75L24 30L16 8" fill="#252d34" stroke="#d4d2c9" strokeWidth="8"/>
+        <path d="M-24-38Q0-60 26-38L12 13L-12 13Z" fill="#a95752"/>
       </g>
     </svg>
     <section className="webgl-fallback-panel" role="alert">

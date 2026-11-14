@@ -6,6 +6,7 @@ export type ResourceView = 'resources' | 'rituals';
 interface AppState {
   view: View;
   infoOpen: boolean;
+  foxPulse: number;
   atlasMode: AtlasMode;
   resourceView: ResourceView;
   selectedChapterId: string;
@@ -33,6 +34,7 @@ interface AppState {
   enterQingqiu: () => void;
   returnToAtlas: () => void;
   toggleInfo: () => void;
+  awakenFox: () => void;
   setAtlasMode: (mode: AtlasMode) => void;
   setResourceView: (view: ResourceView) => void;
   setSelectedChapterId: (id: string) => void;
@@ -61,6 +63,7 @@ interface AppState {
 export const useAppStore = create<AppState>((set) => ({
   view: 'atlas',
   infoOpen: false,
+  foxPulse: 0,
   atlasMode: 'map',
   resourceView: 'resources',
   selectedChapterId: 'nanshan-jing',
@@ -88,6 +91,7 @@ export const useAppStore = create<AppState>((set) => ({
   enterQingqiu: () => set({ view: 'qingqiu', infoOpen: false }),
   returnToAtlas: () => set({ view: 'atlas', infoOpen: false }),
   toggleInfo: () => set((s) => ({ infoOpen: !s.infoOpen })),
+  awakenFox: () => set((s) => ({ foxPulse: s.foxPulse + 1 })),
   setAtlasMode: (atlasMode) => set({ atlasMode }),
   setResourceView: (resourceView) => set({ resourceView }),
   setSelectedChapterId: (selectedChapterId) => set({ selectedChapterId }),

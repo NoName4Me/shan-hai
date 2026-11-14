@@ -11,6 +11,7 @@ function App() {
   const enterQingqiu=useAppStore((s)=>s.enterQingqiu);
   const returnToAtlas=useAppStore((s)=>s.returnToAtlas);
   const toggleInfo=useAppStore((s)=>s.toggleInfo);
+  const awakenFox=useAppStore((s)=>s.awakenFox);
   const page=useRef<HTMLDivElement>(null);
   useEffect(()=>{
     if(page.current)gsap.fromTo(page.current,{opacity:0},{opacity:1,duration:.85,ease:'power2.out'});
@@ -41,10 +42,13 @@ function App() {
         <div className="world-heading">
           <div className="eyebrow"><span className="eyebrow-line"/> THE FIRST REALM · SOUTHERN MOUNTAINS</div>
           <h1>青丘<span>之山</span></h1>
-          <p>循山而行，遇九尾之狐。</p>
+          <p>墨骨为形，九尾为迹。</p>
         </div>
-        <div className="world-guide"><span className="guide-dot"/> 拖动环视 · 滚轮缩放 · 点击九尾狐查看原文</div>
-        <button className="world-info-button" onClick={toggleInfo} aria-expanded={infoOpen}>文献记录 <span>{infoOpen?'−':'+'}</span></button>
+        <div className="world-guide"><span className="guide-dot"/> 拖动环视 · 滚轮缩放 · 轻触九尾狐阅读原文</div>
+        <div className="world-actions">
+          <button type="button" className="world-awaken-button" onClick={awakenFox} aria-label="触发九尾狐展尾与墨纹演出">唤起九尾 <span>↗</span></button>
+          <button type="button" className="world-info-button" onClick={toggleInfo} aria-expanded={infoOpen}>文献记录 <span>{infoOpen?'−':'+'}</span></button>
+        </div>
         {infoOpen&&<aside className="info-panel">
           <button className="close-info" onClick={toggleInfo} aria-label="关闭">×</button>
           <p className="info-kicker">THE BOOK OF MOUNTAINS & SEAS</p>

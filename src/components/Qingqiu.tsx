@@ -1,849 +1,517 @@
 import { Canvas, useFrame } from '@react-three/fiber';
-import { OrbitControls, Sparkles } from '@react-three/drei';
-import { useEffect, useLayoutEffect, useMemo, useRef, useState } from 'react';
+import { OrbitControls } from '@react-three/drei';
+import { useEffect, useMemo, useRef, useState } from 'react';
 import * as THREE from 'three';
 import { useAppStore } from '../store';
 
-const TERRACE = { x: 2.3, z: 0, top: 3.42, radius: 5.1 };
-const LAKE = { x: -17, z: -4, radius: 13.5, level: 0.44 };
-const SUN = new THREE.Vector3(-44, 20, -86);
+/**
+ * 青丘试境：墨骨 / Mineral Ink
+ *
+ * Shared visual grammar: large mineral volumes, off-white hard surfaces,
+ * wet ink edges and restrained cinnabar. The fox alone owns the nine sweeping
+ * tail shapes; later creatures should NOT inherit its anatomy.
+ *
+ * All geometry and ink textures are local and procedural. No external assets.
+ */
+const INK = '#161c23';
+const BONE = '#e2e0d8';
+const CINNABAR = '#a64f49';
+const ASH = '#737879';
 
-const smoothstep = (value: number, min: number, max: number) =>
-  THREE.MathUtils.smoothstep(value, min, max);
+const noise = (n: number) => {
+  const value = Math.sin(n * 127.1 + 19.37) * 43758.5453;
+  return value - Math.floor(value);
+};
 
-function heightAt(x: number, z: number) {
-  const hill = (cx: number, cz: number, height: number, sx: number, sz: number) =>
-    height * Math.exp(-(((x - cx) / sx) ** 2 + ((z - cz) / sz) ** 2));
-
-  let height =
-    0.22 +
-    0.11 * Math.sin(x * 0.23) * Math.cos(z * 0.27) +
-    0.045 * Math.sin((x + z) * 0.61);
-
-  height += 10 * smoothstep(-z, 24, 68);
-  height += hill(-48, -62, 23, 29, 27);
-  height += hill(31, -68, 27, 27, 31);
-  height += hill(-2, -49, 12, 46, 18);
-  height += hill(40, -22, 8, 21, 25);
-  height += hill(-50, -15, 9, 25, 31);
-  height -= hill(LAKE.x, LAKE.z, 2.15, 14.5, 17.5);
-  height += hill(TERRACE.x, TERRACE.z, 1.45, 8.5, 11);
-
-  return height;
+function inkTexture() {
+  const canvas = document.createElement('canvas');
+  canvas.width = 512;
+  canvas.height = 512;
+  const ctx = canvas.getContext('2d');
+  if (!ctx) return new THREE.Texture();
+  ctx.fillStyle = '#e7e3dc';
+  ctx.fillRect(0, 0, 512, 512);
+  for (let i = 0; i < 22; i += 1) {
+    const y = noise(i + 1) * 580 - 30;
+    const x = noise(i + 84) * 370 - 100;
+    const width = 9 + noise(i + 55) * 52;
+    ctx.save();
+    ctx.globalAlpha = 0.06 + noise(i + 44) * 0.21;
+    ctx.lineWidth = width;
+    ctx.lineCap = 'round';
+    ctx.strokeStyle = i % 7 === 0 ? '#923d3e' : '#222831';
+    ctx.beginPath();
+    ctx.moveTo(x, y);
+    ctx.bezierCurveTo(x + 150, y - 48, x + 270, y + 55, x + 520, y - 36);
+    ctx.stroke();
+    ctx.restore();
+  }
+  // Ink pooling follows the strokes, rather than random pixels or grid motifs.
+  for (let i = 0; i < 55; i += 1) {
+    ctx.fillStyle = i % 8 === 0 ? 'rgba(152,64,62,.12)' : 'rgba(20,26,33,.045)';
+    ctx.beginPath();
+    ctx.ellipse(noise(i + 4) * 512, noise(i + 95) * 512, 3 + noise(i + 8) * 16, 1 + noise(i + 11) * 5, noise(i + 5), 0, Math.PI * 2);
+    ctx.fill();
+  }
+  const texture = new THREE.CanvasTexture(canvas);
+  texture.colorSpace = THREE.SRGBColorSpace;
+  texture.wrapS = THREE.RepeatWrapping;
+  return texture;
 }
 
-function SkyDome() {
-  const material = useMemo(
-    () =>
-      new THREE.ShaderMaterial({
-        side: THREE.BackSide,
-        depthWrite: false,
-        uniforms: {
-          sunPosition: { value: SUN.clone().normalize() }
-        },
-        vertexShader: `
-          varying vec3 vWorldPosition;
-          void main() {
-            vec4 worldPosition = modelMatrix * vec4(position, 1.0);
-            vWorldPosition = worldPosition.xyz;
-            gl_Position = projectionMatrix * modelViewMatrix * vec4(position, 1.0);
-          }
-        `,
-        fragmentShader: `
-          uniform vec3 sunPosition;
-          varying vec3 vWorldPosition;
-          void main() {
-            vec3 direction = normalize(vWorldPosition);
-            float height = direction.y;
-            vec3 night = vec3(0.025, 0.032, 0.075);
-            vec3 dusk = vec3(0.16, 0.105, 0.19);
-            vec3 horizon = vec3(0.26, 0.18, 0.23);
-            vec3 sky = mix(horizon, dusk, smoothstep(-0.02, 0.28, height));
-            sky = mix(sky, night, smoothstep(0.16, 0.72, height));
-            vec3 azimuth = normalize(vec3(direction.x, 0.0, direction.z));
-            vec3 sunAzimuth = normalize(vec3(sunPosition.x, 0.0, sunPosition.z));
-            float sunSide = smoothstep(-0.2, 1.0, dot(azimuth, sunAzimuth));
-            float horizonBand = 1.0 - smoothstep(0.0, 0.24, abs(height));
-            sky += vec3(0.78, 0.30, 0.075) * sunSide * horizonBand * 0.72;
-            sky += vec3(0.45, 0.16, 0.04) * pow(sunSide, 4.0) * smoothstep(0.0, 0.2, height) * 0.28;
-            float sunDot = max(dot(direction, sunPosition), 0.0);
-            float glow = pow(sunDot, 20.0) * 0.72 + pow(sunDot, 120.0) * 1.1;
-            float disc = smoothstep(0.9992, 0.99972, sunDot);
-            sky += vec3(1.0, 0.47, 0.13) * glow;
-            sky += vec3(1.0, 0.77, 0.37) * disc * 1.8;
-            gl_FragColor = vec4(sky, 1.0);
-          }
-        `
-      }),
-    []
-  );
-
-  return <mesh material={material} renderOrder={-1}>
-    <sphereGeometry args={[150, 48, 24]} />
-  </mesh>;
-}
-
-function Terrain() {
-  const geometry = useMemo(() => {
-    const geo = new THREE.PlaneGeometry(190, 190, 180, 180);
-    geo.rotateX(-Math.PI / 2);
-    const position = geo.attributes.position as THREE.BufferAttribute;
-    const colors: number[] = [];
-    const deep = new THREE.Color('#1c2929');
-    const moss = new THREE.Color('#44523d');
-    const warmMoss = new THREE.Color('#6a6244');
-    const rock = new THREE.Color('#777261');
-    const color = new THREE.Color();
-
-    for (let i = 0; i < position.count; i += 1) {
-      const x = position.getX(i);
-      const z = position.getZ(i);
-      const height = heightAt(x, z);
-      position.setY(i, height);
-
-      const moisture = smoothstep(-height, -0.2, 1.3);
-      const elevation = smoothstep(height, 1.2, 19);
-      const sunward = smoothstep(-x, 2, 52);
-      color
-        .copy(deep)
-        .lerp(moss, moisture * 0.88)
-        .lerp(warmMoss, sunward * 0.24)
-        .lerp(rock, elevation * 0.68);
-
-      const variation =
-        0.018 * Math.sin(x * 1.31 + z * 0.47) * Math.cos(z * 1.71 - x * 0.39);
-      colors.push(
-        THREE.MathUtils.clamp(color.r + variation, 0, 1),
-        THREE.MathUtils.clamp(color.g + variation, 0, 1),
-        THREE.MathUtils.clamp(color.b + variation, 0, 1)
-      );
-    }
-
-    geo.setAttribute('color', new THREE.Float32BufferAttribute(colors, 3));
-    geo.computeVertexNormals();
-    return geo;
-  }, []);
-
-  return <mesh geometry={geometry} receiveShadow>
-    <meshStandardMaterial vertexColors roughness={1} metalness={0} />
-  </mesh>;
-}
-
-function DistantRidges() {
-  const ridges = useMemo(() => {
-    const rows = [
-      { z: -49, color: '#303b3d', count: 17, height: 14, spread: 126 },
-      { z: -68, color: '#3a4146', count: 14, height: 20, spread: 154 }
-    ];
-    return rows.flatMap((row, rowIndex) =>
-      Array.from({ length: row.count }, (_, index) => {
-        const offset = (index - (row.count - 1) / 2) / ((row.count - 1) / 2);
-        const x = offset * row.spread * 0.5 + (rowIndex ? 8 : -4);
-        const scale = 0.7 + Math.abs(Math.sin(index * 2.17 + rowIndex)) * 0.5;
-        return {
-          x,
-          z: row.z - Math.abs(offset) * 13,
-          height: row.height * scale,
-          radius: 9 + (index % 4) * 2.4,
-          color: row.color
-        };
-      })
-    );
-  }, []);
-
-  return <group>
-    {ridges.map((ridge, index) => <mesh
-      key={index}
-      position={[ridge.x, ridge.height * 0.34 - 2.5, ridge.z]}
-      scale={[ridge.radius, ridge.height, ridge.radius]}
-      rotation={[0, index * 0.37, 0]}
-    >
-      <coneGeometry args={[1, 1, 7]} />
-      <meshStandardMaterial color={ridge.color} roughness={1} flatShading />
-    </mesh>)}
-  </group>;
-}
-
-function Terrace() {
-  const rocks = useMemo(() => Array.from({ length: 17 }, (_, index) => {
-    const angle = (index / 17) * Math.PI * 2 + 0.12;
-    const radius = 4.45 + (index % 3) * 0.28;
-    const scale = 0.42 + (index % 5) * 0.13;
-    return {
-      x: TERRACE.x + Math.cos(angle) * radius,
-      z: TERRACE.z + Math.sin(angle) * radius,
-      y: TERRACE.top + 0.05 + (index % 4) * 0.04,
-      scale,
-      rotation: angle + index * 0.47
-    };
-  }), []);
-
-  return <group>
-    <mesh position={[TERRACE.x, 2.13, TERRACE.z]} rotation={[0, 0.24, 0]} castShadow receiveShadow>
-      <cylinderGeometry args={[5.14, 6.35, 2.58, 9, 1]} />
-      <meshStandardMaterial color="#555a4f" roughness={1} flatShading />
-    </mesh>
-    <mesh position={[TERRACE.x, TERRACE.top - 0.015, TERRACE.z]} rotation={[-Math.PI / 2, 0, 0.24]} receiveShadow>
-      <circleGeometry args={[5.16, 40]} />
-      <meshStandardMaterial color="#4d5b40" roughness={1} />
-    </mesh>
-    {rocks.map((rock, index) => <mesh
-      key={index}
-      position={[rock.x, rock.y, rock.z]}
-      scale={[rock.scale * 1.3, rock.scale * 0.6, rock.scale]}
-      rotation={[0.25, rock.rotation, 0.1]}
-      castShadow
-      receiveShadow
-    >
-      <dodecahedronGeometry args={[1, 0]} />
-      <meshStandardMaterial color={index % 3 ? '#626455' : '#4e5c46'} roughness={1} flatShading />
-    </mesh>)}
-  </group>;
-}
-
-function createTaperedTube(
-  curve: THREE.CatmullRomCurve3,
-  tubularSegments: number,
-  radialSegments: number,
-  radiusAt: (t: number) => number
-) {
-  const frames = curve.computeFrenetFrames(tubularSegments, false);
+function makeRibbon(points: THREE.Vector3[], width: number) {
+  const curve = new THREE.CatmullRomCurve3(points);
   const positions: number[] = [];
-  const normals: number[] = [];
   const colors: number[] = [];
   const indices: number[] = [];
-  const rootColor = new THREE.Color('#c5a57b');
-  const middleColor = new THREE.Color('#f4e4c8');
-  const tipColor = new THREE.Color('#fff8e9');
-  const point = new THREE.Vector3();
-  const normal = new THREE.Vector3();
-  const color = new THREE.Color();
-
-  for (let i = 0; i <= tubularSegments; i += 1) {
-    const t = i / tubularSegments;
-    curve.getPointAt(t, point);
-    const radius = radiusAt(t);
-    const frameNormal = frames.normals[i];
-    const frameBinormal = frames.binormals[i];
-    color.copy(rootColor).lerp(middleColor, smoothstep(t, 0.08, 0.58));
-    color.lerp(tipColor, smoothstep(t, 0.58, 0.96));
-
-    for (let j = 0; j <= radialSegments; j += 1) {
-      const angle = (j / radialSegments) * Math.PI * 2;
-      const sin = Math.sin(angle);
-      const cos = Math.cos(angle);
-      normal
-        .copy(frameNormal)
-        .multiplyScalar(cos)
-        .addScaledVector(frameBinormal, sin)
-        .normalize();
-      positions.push(
-        point.x + normal.x * radius,
-        point.y + normal.y * radius,
-        point.z + normal.z * radius
-      );
-      normals.push(normal.x, normal.y, normal.z);
-      colors.push(color.r, color.g, color.b);
+  const black = new THREE.Color('#0d1820');
+  const dilute = new THREE.Color('#7d8585');
+  for (let i = 0; i <= 48; i += 1) {
+    const t = i / 48;
+    const center = curve.getPoint(t);
+    const tangent = curve.getTangent(t);
+    const across = new THREE.Vector3(tangent.z, 0, -tangent.x).normalize();
+    const taper = Math.pow(Math.sin(Math.PI * t), 0.65);
+    const irregular = 0.86 + 0.14 * Math.sin(t * 63);
+    const half = width * taper * irregular;
+    for (const side of [-1, 1]) {
+      const vertex = center.clone().addScaledVector(across, half * side);
+      positions.push(vertex.x, vertex.y, vertex.z);
+      const c = black.clone().lerp(dilute, (side + 1) * 0.22 + t * 0.18);
+      colors.push(c.r, c.g, c.b);
+    }
+    if (i < 48) {
+      const a = i * 2;
+      indices.push(a, a + 1, a + 2, a + 1, a + 3, a + 2);
     }
   }
-
-  for (let i = 0; i < tubularSegments; i += 1) {
-    for (let j = 0; j < radialSegments; j += 1) {
-      const a = i * (radialSegments + 1) + j;
-      const b = (i + 1) * (radialSegments + 1) + j;
-      const c = a + 1;
-      const d = b + 1;
-      indices.push(a, b, c, b, d, c);
-    }
-  }
-
   const geometry = new THREE.BufferGeometry();
   geometry.setAttribute('position', new THREE.Float32BufferAttribute(positions, 3));
-  geometry.setAttribute('normal', new THREE.Float32BufferAttribute(normals, 3));
   geometry.setAttribute('color', new THREE.Float32BufferAttribute(colors, 3));
   geometry.setIndex(indices);
-  geometry.computeBoundingSphere();
+  geometry.computeVertexNormals();
   return geometry;
 }
 
-function NineTails() {
-  const groups = useRef<Array<THREE.Group | null>>([]);
-  const tails = useMemo(() => Array.from({ length: 9 }, (_, index) => {
-    const spread = (index - 4) / 4;
-    const centerWeight = 1 - Math.abs(spread);
-    const depth = (index % 3) * 0.22;
-    const height = 1.82 + centerWeight * 0.34 + Math.sin(index * 2.3) * 0.12;
-    const reach = 2.28 + centerWeight * 0.22 + Math.sin(index * 1.7) * 0.14;
-    const side = Math.sign(spread) || 1;
-    const curl = Math.sin(index * 1.9 + 0.4) * 0.22;
-    const curve = new THREE.CatmullRomCurve3([
-      new THREE.Vector3(spread * 0.24, 0, -0.42 - depth * 0.2),
-      new THREE.Vector3(spread * 0.44, 0.5, -0.86 - depth * 0.3),
-      new THREE.Vector3(spread * 0.92 + side * 0.08, height * 0.54, -1.24 - depth * 0.36),
-      new THREE.Vector3(spread * 1.35 + side * 0.2, height * 0.92, -1.62 - depth * 0.3),
-      new THREE.Vector3(spread * 1.62 + side * 0.44 + curl, height * 0.82, -1.9 - depth * 0.22),
-      new THREE.Vector3(spread * 1.82 + side * 0.7 + curl, height * 0.5, -reach)
-    ]);
-    const geometry = createTaperedTube(curve, 56, 10, (t) => {
-      const flare = 1 + Math.sin(Math.min(t, 0.94) * Math.PI) * 0.42;
-      return (0.245 * (1 - t) ** 0.46 + 0.014) * flare;
-    });
-    return { geometry, curve, depth };
-  }), []);
-
-  useFrame((state) => {
-    const time = state.clock.elapsedTime;
-    groups.current.forEach((group, index) => {
-      if (!group) return;
-      group.rotation.z = Math.sin(time * 0.36 + index * 0.67) * 0.014;
-      group.rotation.y = Math.sin(time * 0.28 + index * 0.54) * 0.016;
-    });
-  });
-
-  return <group position={[0, 1.58, -0.86]} rotation={[0, 0.16, 0]} scale={1.12}>
-    <mesh position={[0, 0.12, 0.05]} scale={[0.36, 0.28, 0.4]} castShadow>
-      <sphereGeometry args={[1, 18, 12]} />
-      <meshStandardMaterial color="#f7e8d2" roughness={0.88} emissive="#7a4a29" emissiveIntensity={0.1} />
-    </mesh>
-    {tails.map((tail, index) => <group
-      key={index}
-      ref={(node) => { groups.current[index] = node; }}
-      position={[0, 0, tail.depth]}
-    >
-      <mesh geometry={tail.geometry} castShadow>
-        <meshStandardMaterial
-          vertexColors
-          roughness={0.8}
-          metalness={0}
-          emissive="#8b4c22"
-          emissiveIntensity={0.13}
-        />
-      </mesh>
-    </group>)}
-  </group>;
+function makeTail(index: number) {
+  const s = (index - 4) / 4;
+  const outer = Math.abs(s);
+  const curve = new THREE.CatmullRomCurve3([
+    new THREE.Vector3(s * 0.13, 0, 0),
+    new THREE.Vector3(s * 0.34, 0.2, -0.58),
+    new THREE.Vector3(s * 1.1, 0.95 + (1 - outer) * 0.25, -1.18),
+    new THREE.Vector3(s * 2.3, 2.05 + (1 - outer) * 0.3, -1.5),
+    new THREE.Vector3(s * 3.25 + Math.sin(index * 2.1) * 0.19, 2.85 - outer * 0.55, -1.65),
+    new THREE.Vector3(s * 3.78 + Math.sin(index * 1.4) * 0.31, 2.56 - outer * 0.8, -1.96)
+  ]);
+  const segments = 44;
+  const radial = 8;
+  const frames = curve.computeFrenetFrames(segments, false);
+  const positions: number[] = [];
+  const colors: number[] = [];
+  const indices: number[] = [];
+  const pearl = new THREE.Color('#e5e3db');
+  const black = new THREE.Color('#252b33');
+  const red = new THREE.Color('#a54e4b');
+  for (let i = 0; i <= segments; i += 1) {
+    const t = i / segments;
+    const p = curve.getPoint(t);
+    const radius = (0.09 + 0.39 * Math.pow(Math.sin(Math.PI * t), 0.83)) * Math.pow(1 - t, 0.28) + 0.008;
+    for (let j = 0; j <= radial; j += 1) {
+      const a = (j / radial) * Math.PI * 2;
+      const normal = frames.normals[i].clone().multiplyScalar(Math.cos(a) * radius);
+      const binormal = frames.binormals[i].clone().multiplyScalar(Math.sin(a) * radius * 0.57);
+      const v = p.clone().add(normal).add(binormal);
+      positions.push(v.x, v.y, v.z);
+      const lightSide = Math.cos(a) > -0.12;
+      const pigment = pearl.clone().lerp(black, lightSide ? 0.14 : 0.84);
+      const band = Math.sin(t * 22 + index * 3.7 + Math.sin(a * 3)) * 0.5 + 0.5;
+      pigment.lerp(black, (lightSide ? 0.05 : 0.12) + band * 0.11);
+      if ((index + 1) % 3 === 0 || t > 0.77) pigment.lerp(red, Math.max(0, (t - 0.64) * 0.95));
+      colors.push(pigment.r, pigment.g, pigment.b);
+    }
+  }
+  for (let i = 0; i < segments; i += 1) {
+    for (let j = 0; j < radial; j += 1) {
+      const a = i * (radial + 1) + j;
+      const b = a + radial + 1;
+      indices.push(a, b, a + 1, b, b + 1, a + 1);
+    }
+  }
+  const geometry = new THREE.BufferGeometry();
+  geometry.setAttribute('position', new THREE.Float32BufferAttribute(positions, 3));
+  geometry.setAttribute('color', new THREE.Float32BufferAttribute(colors, 3));
+  geometry.setIndex(indices);
+  geometry.computeVertexNormals();
+  return geometry;
 }
 
-function Fox({ onSelect }: { onSelect: () => void }) {
-  const fox = useRef<THREE.Group>(null);
-  const [hovered, setHovered] = useState(false);
+type FoxProps = { onSelect: () => void; pulse: number };
 
-  useEffect(() => () => { document.body.style.cursor = 'auto'; }, []);
+function InkFox({ onSelect, pulse }: FoxProps) {
+  const root = useRef<THREE.Group>(null);
+  const breath = useRef<THREE.Group>(null);
+  const head = useRef<THREE.Group>(null);
+  const tailRefs = useRef<Array<THREE.Group | null>>([]);
+  const legRefs = useRef<Array<THREE.Group | null>>([]);
+  const ripple = useRef<THREE.Mesh>(null);
+  const rippleMaterial = useRef<THREE.MeshBasicMaterial>(null);
+  const awaken = useRef(0);
+  const [hover, setHover] = useState(false);
+  const coat = useMemo(inkTexture, []);
+  const tails = useMemo(() => Array.from({ length: 9 }, (_, index) => makeTail(index)), []);
+  const legs = useMemo(() => [
+    { x: -0.39, z: 0.59, rear: false },
+    { x: 0.39, z: 0.59, rear: false },
+    { x: -0.48, z: -0.69, rear: true },
+    { x: 0.48, z: -0.69, rear: true }
+  ], []);
 
-  useFrame((state) => {
-    if (!fox.current) return;
-    const time = state.clock.elapsedTime;
-    fox.current.rotation.y = -0.18 + Math.sin(time * 0.28) * 0.012;
-    const targetScale = hovered ? 1.035 : 1;
-    const nextScale = THREE.MathUtils.lerp(fox.current.scale.x, targetScale, 0.07);
-    fox.current.scale.setScalar(nextScale);
+  useEffect(() => { if (pulse > 0) awaken.current = 1; }, [pulse]);
+  useEffect(() => () => { document.body.style.cursor = ''; }, []);
+
+  useFrame(({ clock }, delta) => {
+    const t = clock.elapsedTime;
+    awaken.current = Math.max(0, awaken.current - Math.min(delta, 0.08) / 3.2);
+    const response = Math.sin(Math.PI * (1 - awaken.current));
+    const lift = response * (awaken.current > 0 ? 0.33 : 0);
+    if (root.current) {
+      root.current.position.y = 0.52 + Math.sin(t * 0.85) * 0.055 + lift;
+      root.current.rotation.y = -0.16 + Math.sin(t * 0.31) * 0.055 + response * 0.18;
+      const size = THREE.MathUtils.lerp(root.current.scale.x, hover ? 1.035 : 1, 0.075);
+      root.current.scale.setScalar(size);
+    }
+    if (breath.current) {
+      breath.current.scale.set(1 + Math.sin(t * 1.36) * 0.011, 1 + Math.sin(t * 1.36) * 0.017, 1);
+    }
+    if (head.current) {
+      head.current.rotation.x = Math.sin(t * 0.68) * 0.022 - response * 0.12;
+      head.current.rotation.y = Math.sin(t * 0.44) * 0.035;
+    }
+    tailRefs.current.forEach((tail, index) => {
+      if (!tail) return;
+      const s = (index - 4) / 4;
+      tail.rotation.z = Math.sin(t * 0.63 + index * 0.44) * 0.075 + s * response * 0.25;
+      tail.rotation.x = Math.sin(t * 0.48 + index * 0.68) * 0.044 + response * 0.07;
+      tail.rotation.y = Math.sin(t * 0.4 + index * 0.9) * 0.07;
+    });
+    legRefs.current.forEach((leg, index) => {
+      if (!leg) return;
+      leg.rotation.x = Math.sin(t * 0.9 + (index % 2) * Math.PI + Math.floor(index / 2)) * 0.025 + response * (index % 2 ? -0.13 : 0.12);
+    });
+    if (ripple.current) ripple.current.scale.setScalar(0.55 + response * 1.6);
+    if (rippleMaterial.current) rippleMaterial.current.opacity = awaken.current > 0 ? response * 0.42 : 0;
   });
-
-  const fur = (color: string) => <meshStandardMaterial
-    color={color}
-    roughness={0.74}
-    emissive="#8c5a35"
-    emissiveIntensity={0.22}
-  />;
 
   return <group
-    ref={fox}
-    position={[TERRACE.x, TERRACE.top + 0.02, TERRACE.z]}
-    rotation={[0, -0.18, 0]}
+    ref={root}
+    position={[0, 0.52, 0]}
     onClick={(event) => { event.stopPropagation(); onSelect(); }}
-    onPointerOver={(event) => {
-      event.stopPropagation();
-      setHovered(true);
-      document.body.style.cursor = 'pointer';
-    }}
-    onPointerOut={() => {
-      setHovered(false);
-      document.body.style.cursor = 'auto';
-    }}
+    onPointerOver={(event) => { event.stopPropagation(); setHover(true); document.body.style.cursor = 'pointer'; }}
+    onPointerOut={() => { setHover(false); document.body.style.cursor = ''; }}
   >
-    <NineTails />
-
-    <mesh position={[0, 1.56, -0.02]} scale={[0.59, 0.54, 1.08]} castShadow>
-      <sphereGeometry args={[1, 28, 20]} />
-      {fur(hovered ? '#fffaf0' : '#f4ead9')}
-    </mesh>
-    <mesh position={[0, 1.61, 0.61]} scale={[0.5, 0.54, 0.54]} castShadow>
-      <sphereGeometry args={[1, 26, 18]} />
-      {fur('#faf1e2')}
-    </mesh>
-    <mesh position={[0, 1.43, -0.62]} scale={[0.48, 0.46, 0.58]} castShadow>
-      <sphereGeometry args={[1, 24, 18]} />
-      {fur('#eee2d0')}
+    <mesh ref={ripple} position={[0, 0.055, 0]} rotation={[-Math.PI / 2, 0, 0]}>
+      <torusGeometry args={[2.08, 0.026, 5, 80]} />
+      <meshBasicMaterial ref={rippleMaterial} color={CINNABAR} transparent opacity={0} depthWrite={false} />
     </mesh>
 
-    <mesh position={[0, 2.08, 0.72]} rotation={[0.22, 0, 0]} scale={[0.37, 0.48, 0.38]} castShadow>
-      <sphereGeometry args={[1, 24, 18]} />
-      {fur('#fff6e8')}
-    </mesh>
-    <mesh position={[0, 2.59, 0.84]} rotation={[0, 0.08, 0]} scale={[0.42, 0.43, 0.45]} castShadow>
-      <sphereGeometry args={[1, 28, 20]} />
-      {fur('#fff9ee')}
-    </mesh>
-    <mesh position={[0, 2.55, 1.19]} rotation={[0.03, 0, 0]} scale={[0.23, 0.19, 0.38]} castShadow>
-      <sphereGeometry args={[1, 22, 16]} />
-      {fur('#f5ead8')}
-    </mesh>
-    <mesh position={[0, 2.51, 1.54]} scale={[0.105, 0.075, 0.075]}>
-      <sphereGeometry args={[1, 14, 10]} />
-      <meshStandardMaterial color="#3b302d" roughness={0.48} />
-    </mesh>
-
-    {[-0.235, 0.235].map((x) => <group key={x}>
-      <mesh
-        position={[x, 3.02, 0.77]}
-        rotation={[0.08, 0, x * 0.32]}
-        castShadow
-      >
-        <coneGeometry args={[0.175, 0.63, 9]} />
-        {fur('#fff5e5')}
+    <group ref={breath}>
+      {/* Core anatomy: narrow fox silhouette beneath a handful of coherent armor plates. */}
+      <mesh position={[0, 1.49, -0.06]} scale={[0.62, 0.49, 1.03]} castShadow>
+        <sphereGeometry args={[1, 32, 20]} />
+        <meshStandardMaterial color={INK} roughness={0.79} />
       </mesh>
-      <mesh
-        position={[x * 0.88, 3.01, 0.84]}
-        rotation={[0.09, 0, x * 0.32]}
-        scale={[0.62, 0.72, 0.55]}
+      <mesh position={[0, 1.56, -0.05]} scale={[0.626, 0.47, 1.0]} castShadow>
+        <sphereGeometry args={[1, 32, 20]} />
+        <meshStandardMaterial map={coat} roughness={0.81} metalness={0.12} />
+      </mesh>
+      <mesh position={[0, 1.68, 0.43]} rotation={[0.38, 0, 0]} scale={[0.39, 0.57, 0.36]} castShadow>
+        <dodecahedronGeometry args={[1, 1]} />
+        <meshStandardMaterial color={BONE} roughness={0.64} metalness={0.16} flatShading />
+      </mesh>
+      <mesh position={[0, 1.76, 0.72]} rotation={[0.2, 0, 0]} scale={[0.20, 0.48, 0.19]}>
+        <coneGeometry args={[1, 1, 3]} />
+        <meshStandardMaterial color={CINNABAR} roughness={0.75} />
+      </mesh>
+      {[-1, 1].map((side) => <group key={side}>
+        <mesh position={[side * 0.56, 1.56, 0.2]} rotation={[0, side * 0.25, side * 0.55]} scale={[0.15, 0.32, 0.61]} castShadow>
+          <dodecahedronGeometry args={[1, 0]} />
+          <meshStandardMaterial color={BONE} roughness={0.72} flatShading />
+        </mesh>
+        <mesh position={[side * 0.52, 1.58, -0.47]} rotation={[0, side * 0.27, side * 0.32]} scale={[0.24, 0.30, 0.47]}>
+          <dodecahedronGeometry args={[1, 0]} />
+          <meshStandardMaterial color={ASH} roughness={0.88} flatShading />
+        </mesh>
+      </group>)}
+    </group>
+
+    {/* Nine independent brush-blade tails: all actual geometry, each animated. */}
+    <group position={[0, 1.56, -0.82]}>
+      {tails.map((geometry, index) => <group
+        key={index}
+        ref={(node) => { tailRefs.current[index] = node; }}
+        position={[0, 0, -index * 0.035]}
       >
-        <coneGeometry args={[0.175, 0.63, 9]} />
-        <meshStandardMaterial color="#a87966" roughness={0.9} />
+        <mesh geometry={geometry} castShadow>
+          <meshStandardMaterial vertexColors side={THREE.DoubleSide} roughness={0.79} metalness={0.08} />
+        </mesh>
+      </group>)}
+    </group>
+
+    <group ref={head}>
+      <mesh position={[0, 2.18, 0.68]} rotation={[0.32, 0, 0]} scale={[0.31, 0.47, 0.35]} castShadow>
+        <dodecahedronGeometry args={[1, 1]} />
+        <meshStandardMaterial color={INK} roughness={0.77} />
+      </mesh>
+      <mesh position={[0, 2.53, 0.91]} scale={[0.38, 0.32, 0.49]} castShadow>
+        <dodecahedronGeometry args={[1, 2]} />
+        <meshStandardMaterial color={BONE} roughness={0.68} metalness={0.1} flatShading />
+      </mesh>
+      <mesh position={[0, 2.42, 1.33]} rotation={[Math.PI / 2, 0, 0]} scale={[0.21, 0.45, 0.21]} castShadow>
+        <coneGeometry args={[1, 1, 5]} />
+        <meshStandardMaterial color="#d2d2cc" roughness={0.75} flatShading />
+      </mesh>
+      <mesh position={[0, 2.40, 1.55]} scale={[0.09, 0.06, 0.085]}>
+        <sphereGeometry args={[1, 10, 8]} />
+        <meshStandardMaterial color={INK} roughness={0.45} />
+      </mesh>
+      {[-1, 1].map((side) => <group key={side}>
+        <mesh position={[side * 0.255, 2.91, 0.78]} rotation={[-0.12, 0, -side * 0.18]} castShadow>
+          <coneGeometry args={[0.18, 0.7, 4]} />
+          <meshStandardMaterial color={BONE} roughness={0.77} flatShading />
+        </mesh>
+        <mesh position={[side * 0.24, 2.92, 0.85]} rotation={[-0.08, 0, -side * 0.18]}>
+          <coneGeometry args={[0.105, 0.46, 3]} />
+          <meshStandardMaterial color={INK} roughness={0.8} />
+        </mesh>
+        <mesh position={[side * 0.239, 2.57, 1.254]} scale={[0.102, 0.041, 0.035]} rotation={[0, side * 0.12, side * 0.21]}>
+          <sphereGeometry args={[1, 12, 8]} />
+          <meshBasicMaterial color="#d2b19b" toneMapped={false} />
+        </mesh>
+        <mesh position={[side * 0.35, 2.27, 1.04]} rotation={[0.1, side * 0.17, -side * 0.52]} scale={[0.12, 0.33, 0.28]}>
+          <coneGeometry args={[1, 1, 3]} />
+          <meshStandardMaterial color={INK} roughness={0.84} />
+        </mesh>
+      </group>)}
+    </group>
+
+    {legs.map((leg, index) => <group
+      key={index}
+      ref={(node) => { legRefs.current[index] = node; }}
+      position={[leg.x, 1.42, leg.z]}
+      rotation={[leg.rear ? -0.16 : 0.1, 0, leg.x > 0 ? -0.07 : 0.07]}
+    >
+      <mesh position={[leg.x > 0 ? 0.08 : -0.08, -0.35, 0]} rotation={[0.12, 0, leg.x > 0 ? 0.2 : -0.2]} scale={[0.2, 0.49, 0.25]} castShadow>
+        <dodecahedronGeometry args={[1, 1]} />
+        <meshStandardMaterial color={BONE} roughness={0.76} flatShading />
+      </mesh>
+      <mesh position={[leg.x > 0 ? 0.12 : -0.12, -0.79, leg.rear ? -0.1 : 0.08]} scale={[0.12, 0.43, 0.15]} castShadow>
+        <cylinderGeometry args={[0.65, 0.97, 2, 5]} />
+        <meshStandardMaterial color={INK} roughness={0.78} />
+      </mesh>
+      <mesh position={[leg.x > 0 ? 0.12 : -0.12, -1.19, leg.rear ? -0.18 : 0.17]} rotation={[Math.PI / 2, 0, 0]} scale={[0.19, 0.36, 0.1]} castShadow>
+        <coneGeometry args={[1, 1, 4]} />
+        <meshStandardMaterial color={CINNABAR} roughness={0.65} />
       </mesh>
     </group>)}
 
-    {[-0.158, 0.158].map((x) => <mesh key={x} position={[x, 2.66, 1.245]} scale={[0.065, 0.047, 0.038]}>
-      <sphereGeometry args={[1, 14, 10]} />
-      <meshStandardMaterial
-        color="#d69435"
-        emissive="#b95e13"
-        emissiveIntensity={1.1}
-        roughness={0.28}
-      />
+    {/* Hit target covers the nine tails and body without hiding any geometry. */}
+    <mesh position={[0, 2.45, -0.4]} scale={[8.4, 4.4, 5.5]}>
+      <boxGeometry args={[1, 1, 1]} />
+      <meshBasicMaterial transparent opacity={0} colorWrite={false} depthWrite={false} />
+    </mesh>
+  </group>;
+}
+
+function Mountains() {
+  const peaks = useMemo(() => [-60, -45, -31, -16, 4, 20, 37, 52, 67].flatMap((x, i) => {
+    const h = 13 + noise(i + 7) * 25;
+    return [
+      { x, z: -53 - (i % 3) * 9, h, r: 7.5 + noise(i + 19) * 5.5, color: i % 2 ? '#3b424a' : '#4a5055' },
+      { x: x + 8, z: -74, h: h * 0.8, r: 9, color: '#313a43' }
+    ];
+  }), []);
+
+  return <group>
+    {peaks.map((p, i) => <group key={i} position={[p.x, -1, p.z]} rotation={[0, i * 0.31, 0]}>
+      <mesh position={[0, p.h * 0.44, 0]} scale={[p.r, p.h, p.r * 0.72]}>
+        <coneGeometry args={[1, 1, 5]} />
+        <meshStandardMaterial color={p.color} roughness={1} flatShading />
+      </mesh>
+      <mesh position={[-p.r * 0.17, p.h * 0.84, p.r * 0.2]} scale={[p.r * 0.18, p.h * 0.19, p.r * 0.23]} rotation={[0, 0, -0.3]}>
+        <coneGeometry args={[1, 1, 3]} />
+        <meshBasicMaterial color="#939694" />
+      </mesh>
+    </group>)}
+  </group>;
+}
+
+function Landscape() {
+  const strokes = useMemo(() => [
+    makeRibbon([new THREE.Vector3(-17, -0.72, 14), new THREE.Vector3(-6, -0.7, 11), new THREE.Vector3(8, -0.7, 12), new THREE.Vector3(23, -0.72, 18)], 1.1),
+    makeRibbon([new THREE.Vector3(-24, -0.7, -5), new THREE.Vector3(-15, -0.68, 1), new THREE.Vector3(-8, -0.68, 4), new THREE.Vector3(3, -0.68, 8)], 0.8),
+    makeRibbon([new THREE.Vector3(8, -0.69, -16), new THREE.Vector3(16, -0.69, -9), new THREE.Vector3(25, -0.69, -6)], 0.7)
+  ], []);
+  const stones = useMemo(() => Array.from({ length: 34 }, (_, index) => {
+    const a = noise(index + 12) * Math.PI * 2;
+    const d = 10 + noise(index + 49) * 29;
+    return {
+      x: Math.sin(a) * d,
+      z: Math.cos(a) * d + 3,
+      y: -0.45,
+      size: 0.38 + noise(index + 77) * 1.55,
+      turn: noise(index + 17) * 3
+    };
+  }), []);
+  const trees = useMemo(() => [
+    [-12, -7, 1.4], [-15, 9, 1.7], [-11, 17, 1.15], [12, -8, 1.4],
+    [17, 8, 1.8], [23, 17, 1.3], [-24, -22, 1.8], [25, -27, 1.6]
+  ] as Array<[number, number, number]>, []);
+
+  return <group>
+    <mesh position={[0, -0.84, 0]} rotation={[-Math.PI / 2, 0, 0]} receiveShadow>
+      <planeGeometry args={[220, 220]} />
+      <meshStandardMaterial color="#39434a" roughness={1} />
+    </mesh>
+    <mesh position={[-22, -0.71, -6]} rotation={[-Math.PI / 2, 0, -0.12]}>
+      <circleGeometry args={[20, 72]} />
+      <meshStandardMaterial color="#1b2930" metalness={0.27} roughness={0.34} />
+    </mesh>
+    {strokes.map((geometry, index) => <mesh key={index} geometry={geometry}>
+      <meshBasicMaterial vertexColors side={THREE.DoubleSide} transparent opacity={index === 0 ? 0.69 : 0.48} depthWrite={false} />
     </mesh>)}
 
-    {[-0.3, 0.3].map((x) => <group key={`front-${x}`}>
-      <mesh position={[x, 0.84, 0.64]} scale={[0.16, 0.72, 0.18]} castShadow>
-        <capsuleGeometry args={[0.12, 0.58, 6, 10]} />
-        {fur('#f6ecdc')}
-      </mesh>
-      <mesh position={[x, 0.17, 0.77]} scale={[0.19, 0.12, 0.27]} castShadow>
-        <sphereGeometry args={[1, 18, 12]} />
-        {fur('#fff8ea')}
-      </mesh>
-    </group>)}
-    {[-0.32, 0.32].map((x) => <group key={`back-${x}`}>
-      <mesh position={[x, 0.86, -0.57]} rotation={[-0.16, 0, 0]} scale={[0.18, 0.75, 0.2]} castShadow>
-        <capsuleGeometry args={[0.13, 0.6, 6, 10]} />
-        {fur('#eee1cf')}
-      </mesh>
-      <mesh position={[x, 0.18, -0.7]} scale={[0.2, 0.12, 0.29]} castShadow>
-        <sphereGeometry args={[1, 18, 12]} />
-        {fur('#faf0df')}
-      </mesh>
-    </group>)}
-
-    <mesh position={[0, 1.88, 0.74]} rotation={[0.38, 0, 0]} scale={[0.34, 0.61, 0.26]} castShadow>
-      <coneGeometry args={[1, 1, 10]} />
-      {fur('#fff6e7')}
+    {/* The stage uses the same mineral/ink surface system as the fox armor. */}
+    <mesh position={[0, -0.04, 0]} castShadow receiveShadow rotation={[0, -0.11, 0]}>
+      <cylinderGeometry args={[6.55, 7.75, 1.56, 9]} />
+      <meshStandardMaterial color="#242d35" roughness={0.94} flatShading />
     </mesh>
-
-    <mesh position={[0, 2.45, 0.4]} scale={[4.8, 2.9, 4.6]}>
-      <boxGeometry args={[1, 1, 1]} />
-      <meshBasicMaterial transparent opacity={0} depthWrite={false} colorWrite={false} />
+    <mesh position={[0, 0.73, 0]} rotation={[-Math.PI / 2, 0, 0.11]} receiveShadow>
+      <circleGeometry args={[6.55, 9]} />
+      <meshStandardMaterial color="#7c8583" roughness={0.89} flatShading />
     </mesh>
-  </group>;
-}
-
-function Forest() {
-  const trunks = useRef<THREE.InstancedMesh>(null);
-  const lowerCrowns = useRef<THREE.InstancedMesh>(null);
-  const upperCrowns = useRef<THREE.InstancedMesh>(null);
-  const trees = useMemo(() => {
-    let seed = 782341;
-    const random = () => ((seed = (1664525 * seed + 1013904223) >>> 0) / 4294967296);
-    const result: Array<{ x: number; y: number; z: number; height: number; radius: number; tone: number }> = [];
-
-    for (let i = 0; i < 360; i += 1) {
-      const x = -86 + random() * 172;
-      const z = -72 + random() * 122;
-      const distanceToLake = Math.hypot(x - LAKE.x, z - LAKE.z);
-      const distanceToTerrace = Math.hypot(x - TERRACE.x, z - TERRACE.z);
-      const y = heightAt(x, z);
-      if (y < 0.65 || distanceToLake < 13.5 || distanceToTerrace < 7.2) continue;
-      if (x > -8 && x < 16 && z > -12 && z < 17) continue;
-      result.push({
-        x,
-        y,
-        z,
-        height: 2.3 + random() * 5.1,
-        radius: 0.55 + random() * 0.52,
-        tone: random()
-      });
-    }
-    return result;
-  }, []);
-
-  useLayoutEffect(() => {
-    const dummy = new THREE.Object3D();
-    const color = new THREE.Color();
-    trees.forEach((tree, index) => {
-      dummy.position.set(tree.x, tree.y + tree.height * 0.24, tree.z);
-      dummy.rotation.set(0, index * 0.73, 0);
-      dummy.scale.set(tree.radius * 0.17, tree.height * 0.5, tree.radius * 0.17);
-      dummy.updateMatrix();
-      trunks.current?.setMatrixAt(index, dummy.matrix);
-
-      dummy.position.set(tree.x, tree.y + tree.height * 0.57, tree.z);
-      dummy.rotation.set(0, index * 0.91, 0);
-      dummy.scale.set(tree.height * 0.25 * tree.radius, tree.height * 0.57, tree.height * 0.25 * tree.radius);
-      dummy.updateMatrix();
-      lowerCrowns.current?.setMatrixAt(index, dummy.matrix);
-      lowerCrowns.current?.setColorAt(index, color.set(tree.tone > 0.5 ? '#1e3734' : '#283d35'));
-
-      dummy.position.set(tree.x, tree.y + tree.height * 0.83, tree.z);
-      dummy.rotation.set(0, index * 0.63, 0);
-      dummy.scale.set(tree.height * 0.17 * tree.radius, tree.height * 0.38, tree.height * 0.17 * tree.radius);
-      dummy.updateMatrix();
-      upperCrowns.current?.setMatrixAt(index, dummy.matrix);
-      upperCrowns.current?.setColorAt(index, color.set(tree.tone > 0.5 ? '#29433c' : '#33493c'));
-    });
-    [trunks, lowerCrowns, upperCrowns].forEach((ref) => {
-      if (!ref.current) return;
-      ref.current.instanceMatrix.needsUpdate = true;
-      if (ref.current.instanceColor) ref.current.instanceColor.needsUpdate = true;
-    });
-  }, [trees]);
-
-  return <group>
-    <instancedMesh ref={trunks} args={[undefined, undefined, trees.length]} castShadow>
-      <cylinderGeometry args={[0.72, 1, 1, 5]} />
-      <meshStandardMaterial color="#303b32" roughness={1} />
-    </instancedMesh>
-    <instancedMesh ref={lowerCrowns} args={[undefined, undefined, trees.length]} castShadow>
-      <coneGeometry args={[1, 1, 7]} />
-      <meshStandardMaterial color="#ffffff" vertexColors roughness={1} flatShading />
-    </instancedMesh>
-    <instancedMesh ref={upperCrowns} args={[undefined, undefined, trees.length]} castShadow>
-      <coneGeometry args={[1, 1, 7]} />
-      <meshStandardMaterial color="#ffffff" vertexColors roughness={1} flatShading />
-    </instancedMesh>
-  </group>;
-}
-
-function Grass() {
-  const grass = useRef<THREE.InstancedMesh>(null);
-  const blades = useMemo(() => {
-    let seed = 421977;
-    const random = () => ((seed = (1103515245 * seed + 12345) >>> 0) / 4294967296);
-    const result: Array<{ x: number; y: number; z: number; height: number; tone: number }> = [];
-    for (let i = 0; i < 2600; i += 1) {
-      const x = -55 + random() * 110;
-      const z = -22 + random() * 58;
-      const y = heightAt(x, z);
-      if (y < 0.32) continue;
-      if (Math.hypot(x - LAKE.x, z - LAKE.z) < 12.5) continue;
-      if (Math.hypot(x - TERRACE.x, z - TERRACE.z) < 5.7) continue;
-      result.push({ x, y, z, height: 0.36 + random() * 1.18, tone: random() });
-    }
-    return result;
-  }, []);
-
-  useLayoutEffect(() => {
-    const dummy = new THREE.Object3D();
-    const color = new THREE.Color();
-    blades.forEach((blade, index) => {
-      dummy.position.set(blade.x, blade.y + blade.height * 0.5, blade.z);
-      dummy.rotation.set(
-        (index % 7) * 0.025,
-        (index * 1.61) % (Math.PI * 2),
-        Math.sin(index * 1.31) * 0.13
-      );
-      dummy.scale.set(1, blade.height, 1);
-      dummy.updateMatrix();
-      grass.current?.setMatrixAt(index, dummy.matrix);
-      grass.current?.setColorAt(
-        index,
-        color.set(blade.tone > 0.55 ? '#8b8256' : '#626a48')
-      );
-    });
-    if (grass.current) {
-      grass.current.instanceMatrix.needsUpdate = true;
-      if (grass.current.instanceColor) grass.current.instanceColor.needsUpdate = true;
-    }
-  }, [blades]);
-
-  return <instancedMesh ref={grass} args={[undefined, undefined, blades.length]}>
-    <coneGeometry args={[0.035, 1, 3]} />
-    <meshStandardMaterial color="#ffffff" vertexColors roughness={1} side={THREE.DoubleSide} />
-  </instancedMesh>;
-}
-
-function Rocks() {
-  const rocks = useMemo(() => {
-    let seed = 67311;
-    const random = () => ((seed = (1664525 * seed + 1013904223) >>> 0) / 4294967296);
-    return Array.from({ length: 58 }, (_, index) => {
-      const nearShore = index < 30;
-      const angle = random() * Math.PI * 2;
-      const radius = nearShore ? LAKE.radius + 0.4 + random() * 3.2 : 9 + random() * 37;
-      const x = nearShore ? LAKE.x + Math.cos(angle) * radius : TERRACE.x + Math.cos(angle) * radius;
-      const z = nearShore ? LAKE.z + Math.sin(angle) * radius : TERRACE.z + Math.sin(angle) * radius;
-      const scale = 0.28 + random() * 1.15;
-      return {
-        x,
-        y: heightAt(x, z) + scale * 0.24,
-        z,
-        scale,
-        rotation: random() * Math.PI
-      };
-    });
-  }, []);
-
-  return <group>
-    {rocks.map((rock, index) => <mesh
+    <mesh position={[0, 0.754, 0]} rotation={[-Math.PI / 2, 0, -0.21]}>
+      <ringGeometry args={[5.85, 5.91, 90]} />
+      <meshBasicMaterial color="#c38a75" transparent opacity={0.48} side={THREE.DoubleSide} />
+    </mesh>
+    {stones.map((stone, index) => <mesh
       key={index}
-      position={[rock.x, rock.y, rock.z]}
-      rotation={[rock.rotation * 0.21, rock.rotation, rock.rotation * 0.1]}
-      scale={[rock.scale * 1.3, rock.scale * 0.72, rock.scale]}
-      castShadow
-      receiveShadow
+      position={[stone.x, stone.y, stone.z]}
+      scale={[stone.size * 1.3, stone.size * 0.8, stone.size]}
+      rotation={[index * 0.12, stone.turn, index * 0.06]}
+      castShadow receiveShadow
     >
       <dodecahedronGeometry args={[1, 0]} />
-      <meshStandardMaterial
-        color={index % 4 === 0 ? '#53604a' : '#666559'}
-        roughness={1}
-        flatShading
-      />
+      <meshStandardMaterial color={index % 3 === 0 ? '#777d7b' : '#242f37'} roughness={0.97} flatShading />
     </mesh>)}
+    {trees.map(([x, z, scale], index) => <group key={index} position={[x, -0.4, z]} scale={scale} rotation={[0, index * 0.41, 0]}>
+      <mesh position={[0, 1.15, 0]} rotation={[0, 0, 0.15]}>
+        <cylinderGeometry args={[0.075, 0.20, 2.4, 5]} />
+        <meshStandardMaterial color="#1a252b" roughness={1} />
+      </mesh>
+      <mesh position={[-0.27, 2.35, 0]} rotation={[0, 0, 0.25]} scale={[0.67, 1.5, 0.22]}>
+        <coneGeometry args={[1, 1, 3]} />
+        <meshStandardMaterial color={index % 2 ? '#636c6b' : '#465052'} roughness={1} side={THREE.DoubleSide} flatShading />
+      </mesh>
+      <mesh position={[0.32, 2.85, 0.05]} rotation={[0, 0, -0.19]} scale={[0.42, 1.23, 0.21]}>
+        <coneGeometry args={[1, 1, 3]} />
+        <meshStandardMaterial color="#303b42" roughness={1} side={THREE.DoubleSide} flatShading />
+      </mesh>
+    </group>)}
   </group>;
-}
-
-function StoneSteps() {
-  return <group position={[TERRACE.x + 1.2, 0, TERRACE.z + 6.5]} rotation={[0, -0.1, 0]}>
-    {Array.from({ length: 6 }, (_, index) => <mesh
-      key={index}
-      position={[0, 0.24 + index * 0.49, -index * 0.86]}
-      scale={[2.05 - index * 0.08, 0.28, 0.86]}
-      castShadow
-      receiveShadow
-    >
-      <boxGeometry args={[1, 1, 1]} />
-      <meshStandardMaterial color={index % 2 ? '#5a5c50' : '#656456'} roughness={1} />
-    </mesh>)}
-  </group>;
-}
-
-function Water() {
-  const reflectionTexture = useMemo(() => {
-    const canvas = document.createElement('canvas');
-    canvas.width = 64;
-    canvas.height = 256;
-    const context = canvas.getContext('2d');
-    if (context) {
-      const gradient = context.createRadialGradient(32, 128, 2, 32, 128, 124);
-      gradient.addColorStop(0, 'rgba(255,196,108,0.9)');
-      gradient.addColorStop(0.26, 'rgba(245,145,65,0.38)');
-      gradient.addColorStop(1, 'rgba(245,145,65,0)');
-      context.fillStyle = gradient;
-      context.fillRect(0, 0, 64, 256);
-    }
-    return new THREE.CanvasTexture(canvas);
-  }, []);
-
-  return <group>
-    <mesh position={[LAKE.x + 1.5, 0.16, LAKE.z + 5.2]} rotation={[-Math.PI / 2, 0, 0.08]}>
-      <circleGeometry args={[LAKE.radius + 2.2, 72]} />
-      <meshStandardMaterial color="#202a28" roughness={1} />
-    </mesh>
-    <mesh position={[LAKE.x, LAKE.level, LAKE.z]} rotation={[-Math.PI / 2, 0, 0.08]} receiveShadow>
-      <circleGeometry args={[LAKE.radius, 96]} />
-      <meshPhysicalMaterial
-        color="#0b1820"
-        roughness={0.36}
-        metalness={0.28}
-        clearcoat={1}
-        clearcoatRoughness={0.1}
-        transparent
-        opacity={0.95}
-      />
-    </mesh>
-    <mesh
-      position={[LAKE.x - 4.2, LAKE.level + 0.012, LAKE.z + 1.2]}
-      rotation={[-Math.PI / 2, 0, 0.06]}
-    >
-      <planeGeometry args={[5.2, 25]} />
-      <meshBasicMaterial
-        map={reflectionTexture}
-        transparent
-        opacity={0.24}
-        depthWrite={false}
-        blending={THREE.AdditiveBlending}
-      />
-    </mesh>
-  </group>;
-}
-
-function Sun() {
-  const glowTexture = useMemo(() => {
-    const canvas = document.createElement('canvas');
-    canvas.width = 256;
-    canvas.height = 256;
-    const context = canvas.getContext('2d');
-    if (context) {
-      const gradient = context.createRadialGradient(128, 128, 4, 128, 128, 126);
-      gradient.addColorStop(0, 'rgba(255,244,208,1)');
-      gradient.addColorStop(0.2, 'rgba(255,210,130,1)');
-      gradient.addColorStop(0.35, 'rgba(250,158,72,0.5)');
-      gradient.addColorStop(1, 'rgba(236,98,30,0)');
-      context.fillStyle = gradient;
-      context.fillRect(0, 0, 256, 256);
-    }
-    return new THREE.CanvasTexture(canvas);
-  }, []);
-
-  return <sprite position={[-38, 13.2, -88]} scale={[30, 30, 1]}>
-    <spriteMaterial
-      map={glowTexture}
-      transparent
-      opacity={0.96}
-      depthWrite={false}
-      depthTest={false}
-      blending={THREE.AdditiveBlending}
-    />
-  </sprite>;
 }
 
 function Mist() {
+  const sprites = useRef<Array<THREE.Sprite | null>>([]);
   const texture = useMemo(() => {
     const canvas = document.createElement('canvas');
-    canvas.width = 256;
+    canvas.width = 128;
     canvas.height = 128;
-    const context = canvas.getContext('2d');
-    if (context) {
-      const gradient = context.createRadialGradient(128, 64, 2, 128, 64, 124);
-      gradient.addColorStop(0, 'rgba(255,220,170,0.78)');
-      gradient.addColorStop(0.42, 'rgba(232,188,145,0.32)');
-      gradient.addColorStop(1, 'rgba(210,170,140,0)');
-      context.fillStyle = gradient;
-      context.fillRect(0, 0, 256, 128);
+    const ctx = canvas.getContext('2d');
+    if (ctx) {
+      const gradient = ctx.createRadialGradient(64, 64, 2, 64, 64, 63);
+      gradient.addColorStop(0, 'rgba(214,215,201,.5)');
+      gradient.addColorStop(0.5, 'rgba(170,184,183,.12)');
+      gradient.addColorStop(1, 'rgba(120,146,150,0)');
+      ctx.fillStyle = gradient;
+      ctx.fillRect(0, 0, 128, 128);
     }
     return new THREE.CanvasTexture(canvas);
   }, []);
-  const sprites = useRef<Array<THREE.Sprite | null>>([]);
-  const clouds = useMemo(() => Array.from({ length: 12 }, (_, index) => ({
-    x: -38 + (index % 6) * 13 + (index % 2) * 4,
-    y: 1.5 + (index % 4) * 1.45,
-    z: -24 - Math.floor(index / 3) * 9 + (index % 3) * 3,
-    scaleX: 18 + (index % 4) * 7,
-    scaleY: 4.5 + (index % 3) * 2.1,
-    opacity: 0.09 + (index % 4) * 0.028
+  const clouds = useMemo(() => Array.from({ length: 10 }, (_, i) => ({
+    x: -39 + i * 8,
+    z: -18 - (i % 4) * 9,
+    y: 0.8 + (i % 3) * 0.8
   })), []);
-
-  useFrame((state) => {
-    const time = state.clock.elapsedTime;
+  useFrame(({ clock }) => {
     sprites.current.forEach((sprite, index) => {
-      if (!sprite) return;
-      const cloud = clouds[index];
-      sprite.position.x = cloud.x + Math.sin(time * 0.045 + index * 0.7) * 4.2;
+      if (sprite) sprite.position.x = clouds[index].x + Math.sin(clock.elapsedTime * 0.085 + index) * 2.5;
     });
   });
-
-  return <group>
-    {clouds.map((cloud, index) => <sprite
-      key={index}
-      ref={(node) => { sprites.current[index] = node; }}
-      position={[cloud.x, cloud.y, cloud.z]}
-      scale={[cloud.scaleX, cloud.scaleY, 1]}
-    >
-      <spriteMaterial
-        map={texture}
-        color="#d9ae82"
-        transparent
-        opacity={cloud.opacity}
-        depthWrite={false}
-        blending={THREE.AdditiveBlending}
-      />
-    </sprite>)}
-  </group>;
+  return <group>{clouds.map((cloud, index) => <sprite
+    key={index}
+    ref={(node) => { sprites.current[index] = node; }}
+    position={[cloud.x, cloud.y, cloud.z]}
+    scale={[22, 6, 1]}
+  >
+    <spriteMaterial map={texture} color="#c5bdb3" transparent opacity={0.22} depthWrite={false} />
+  </sprite>)}</group>;
 }
 
 export default function Qingqiu() {
-  const toggleInfo = useAppStore((state) => state.toggleInfo);
-
+  const toggleInfo = useAppStore((s) => s.toggleInfo);
+  const pulse = useAppStore((s) => s.foxPulse);
   return <Canvas
     shadows
-    dpr={[1, 1.75]}
-    camera={{ position: [12.5, 8.8, 27], fov: 42, near: 0.1, far: 260 }}
-    gl={{
-      antialias: true,
-      alpha: false,
-      powerPreference: 'high-performance',
-      failIfMajorPerformanceCaveat: false
-    }}
+    dpr={[1, 1.5]}
+    camera={{ position: [8.3, 5.8, 17.5], fov: 43, near: 0.1, far: 230 }}
+    gl={{ antialias: true, alpha: false, powerPreference: 'high-performance' }}
     onCreated={({ gl }) => {
       gl.toneMapping = THREE.ACESFilmicToneMapping;
-      gl.toneMappingExposure = 1.08;
+      gl.toneMappingExposure = 1.13;
       gl.shadowMap.type = THREE.PCFSoftShadowMap;
     }}
   >
-    <color attach="background" args={['#14182a']} />
-    <fog attach="fog" args={['#3b3341', 48, 170]} />
-
-    <ambientLight intensity={0.46} color="#8c9aad" />
-    <hemisphereLight intensity={0.66} color="#93a8ba" groundColor="#2b2118" />
+    <color attach="background" args={['#222b34']} />
+    <fog attach="fog" args={['#3c464b', 24, 105]} />
+    <ambientLight intensity={0.72} color="#c5cfcc" />
+    <hemisphereLight intensity={0.88} color="#d9d3c9" groundColor="#28343c" />
     <directionalLight
+      position={[-15, 23, -16]}
+      intensity={2.55}
+      color="#f3dbcb"
       castShadow
-      position={[-42, 22, -48]}
-      color="#ffc07a"
-      intensity={3.65}
-      shadow-mapSize={[1536, 1536]}
-      shadow-camera-left={-42}
-      shadow-camera-right={42}
-      shadow-camera-top={42}
-      shadow-camera-bottom={-42}
+      shadow-mapSize={[1024, 1024]}
+      shadow-camera-left={-25}
+      shadow-camera-right={25}
+      shadow-camera-top={25}
+      shadow-camera-bottom={-25}
       shadow-camera-near={1}
-      shadow-camera-far={140}
-      shadow-bias={-0.00016}
-      shadow-normalBias={0.025}
+      shadow-camera-far={100}
+      shadow-normalBias={0.028}
     />
-    <directionalLight position={[24, 18, 30]} color="#b9c4c9" intensity={1.35} />
-    <pointLight position={[0.6, 6.2, -2.6]} color="#ffb76f" intensity={28} distance={18} decay={2} />
-    <pointLight position={[6.8, 4.5, 5.2]} color="#d3d6cf" intensity={22} distance={18} decay={2} />
-
-    <SkyDome />
-    <Sun />
-    <DistantRidges />
-    <Terrain />
-    <Water />
-    <Forest />
-    <Grass />
-    <Rocks />
-    <StoneSteps />
-    <Terrace />
-    <Fox onSelect={toggleInfo} />
+    <directionalLight position={[12, 10, 15]} color="#9fb2b9" intensity={1.5} />
+    <pointLight position={[0, 5, -3]} color="#ad5b50" intensity={13} distance={14} decay={2} />
+    <mesh position={[-28, 25, -74]}>
+      <sphereGeometry args={[9, 40, 24]} />
+      <meshBasicMaterial color="#d8d2c4" />
+    </mesh>
+    <Mountains />
+    <Landscape />
     <Mist />
-    <Sparkles
-      count={52}
-      speed={0.16}
-      size={1.5}
-      opacity={0.38}
-      scale={[56, 18, 52]}
-      position={[-2, 6, -8]}
-      color="#ffd18b"
-    />
-
+    <InkFox onSelect={toggleInfo} pulse={pulse} />
     <OrbitControls
       makeDefault
-      target={[2.8, 4.35, -0.4]}
+      target={[0, 2.35, -0.5]}
       enablePan={false}
       enableDamping
-      dampingFactor={0.055}
+      dampingFactor={0.065}
       autoRotate
-      autoRotateSpeed={0.16}
-      minDistance={9}
-      maxDistance={54}
-      minPolarAngle={0.68}
-      maxPolarAngle={1.48}
+      autoRotateSpeed={0.14}
+      minDistance={7.5}
+      maxDistance={37}
+      minPolarAngle={0.56}
+      maxPolarAngle={1.46}
     />
   </Canvas>;
 }
