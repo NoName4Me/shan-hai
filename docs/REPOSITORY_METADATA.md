@@ -2,17 +2,20 @@
 
 Copy these values into the repository's GitHub **About** panel.
 
-- Description: 基于《山海经》的交互式神话地理舆图与 3D 沉浸体验，包含原文溯源、山系路线、异兽图鉴与可探索场景。
+- Description: 基于《山海经》的原生 Three.js 第一人称水墨科幻漫游场景，以程序化地理与机甲九尾重述青丘之山。
 - Website: https://noname4me.github.io/shan-hai/
 - Topics:
   - shan-hai-jing
   - chinese-mythology
   - chinese-classics
   - threejs
-  - react-three-fiber
-  - interactive-map
+  - procedural-generation
+  - webgl
+  - first-person
+  - game
+  - ink-wash
+  - procedural-modeling
   - digital-humanities
-  - textual-hydrology
   - mythology
   - vite
   - github-pages

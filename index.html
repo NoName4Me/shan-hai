@@ -2,19 +2,200 @@
 <html lang="zh-CN">
   <head>
     <meta charset="UTF-8" />
-    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-    <meta name="theme-color" content="#081f25" />
-    <meta name="description" content="基于《山海经》的交互式神话地理舆图与 3D 沉浸体验，包含原文溯源、五方山系路线、异兽图鉴与可探索场景。" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, viewport-fit=cover" />
+    <meta name="theme-color" content="#050b12" />
+    <meta
+      name="description"
+      content="《山海经·南山经》青丘之山的原生 Three.js 第一人称水墨科幻漫游。自由探索，寻找机甲九尾。"
+    />
     <link rel="canonical" href="https://noname4me.github.io/shan-hai/" />
     <meta property="og:type" content="website" />
-    <meta property="og:title" content="山海之间 · SHAN HAI" />
-    <meta property="og:description" content="循古籍所记，探索五方山系、异兽图鉴与沉浸式青丘世界。" />
+    <meta property="og:title" content="青丘之山 · 山海之间" />
+    <meta property="og:description" content="第一人称漫游青丘，在雾、月与机械遗迹之间寻找机甲九尾。" />
     <meta property="og:url" content="https://noname4me.github.io/shan-hai/" />
     <meta property="og:site_name" content="山海之间 · SHAN HAI" />
-    <title>山海之间 · SHAN HAI</title>
+    <title>青丘之山 · 山海之间</title>
   </head>
   <body>
-    <div id="root"></div>
-    <script type="module" src="/src/main.tsx"></script>
+    <div id="app" class="experience is-booting">
+      <div id="scene-root" class="scene-root" aria-label="青丘之山第一人称三维场景"></div>
+      <div class="scene-grade" aria-hidden="true"></div>
+      <div class="scene-noise" aria-hidden="true"></div>
+      <div class="scene-scanlines" aria-hidden="true"></div>
+      <div class="scene-vignette" aria-hidden="true"></div>
+
+      <header class="hud-top">
+        <div class="brand">
+          <span class="brand-mark"><i>山</i><i>海</i></span>
+          <span class="brand-copy">
+            <strong>山海之间</strong>
+            <small>QINGQIU / EXPLORATION 01</small>
+          </span>
+        </div>
+
+        <div class="compass" aria-label="视角方位">
+          <span class="compass-side">W</span>
+          <span class="compass-track" aria-hidden="true">
+            <i></i><i></i><i></i><i></i><i></i><i></i><i></i><i></i><i></i>
+            <b id="compass-needle"></b>
+          </span>
+          <span class="compass-side">E</span>
+          <strong id="compass-heading">000°</strong>
+        </div>
+
+        <div class="hud-actions">
+          <span id="backend-badge" class="backend-badge">WEBGL2</span>
+          <button id="info-button" class="hud-button" type="button" aria-expanded="false" aria-controls="info-panel">
+            <span class="hud-button-icon">典</span>
+            文献记录
+          </button>
+        </div>
+      </header>
+
+      <section class="location-readout" aria-live="polite">
+        <span class="location-index">01</span>
+        <div>
+          <strong id="hud-zone">青丘南麓</strong>
+          <small id="hud-coordinates">E 000.0 / N 000.0</small>
+        </div>
+      </section>
+
+      <aside class="mission-card">
+        <p class="hud-label">CURRENT TRACE</p>
+        <span class="mission-line"></span>
+        <h2>九尾的呼吸</h2>
+        <p>循赤色地脉深入山谷，在机械天关前寻找九尾祭坛。</p>
+        <div class="mission-distance">
+          <span id="mission-distance">--</span>
+          <small>M TO TARGET</small>
+        </div>
+      </aside>
+
+      <div class="reticle" aria-hidden="true">
+        <span></span><span></span><i></i>
+      </div>
+
+      <div id="interact-prompt" class="interact-prompt" hidden>
+        <kbd>E</kbd>
+        <span>读取九尾残卷</span>
+      </div>
+
+      <div class="controls-dock">
+        <div class="control-item">
+          <div class="key-grid" aria-hidden="true">
+            <kbd>W</kbd>
+            <kbd>A</kbd><kbd>S</kbd><kbd>D</kbd>
+          </div>
+          <span>移动</span>
+        </div>
+        <div class="control-item">
+          <kbd class="wide">SHIFT</kbd>
+          <span>疾行</span>
+        </div>
+        <div class="control-item">
+          <span class="mouse-icon" aria-hidden="true"></span>
+          <span>拖动视角</span>
+        </div>
+        <div class="control-item">
+          <span class="wheel-icon" aria-hidden="true"></span>
+          <span>聚焦</span>
+        </div>
+        <div class="control-item">
+          <kbd class="wide">SPACE</kbd>
+          <span>跃起</span>
+        </div>
+      </div>
+
+      <div class="telemetry">
+        <div><span>VEL</span><strong id="hud-speed">0.0</strong><small>M/S</small></div>
+        <div><span>ALT</span><strong id="hud-altitude">0.0</strong><small>M</small></div>
+        <div class="signal-bars" aria-hidden="true"><i></i><i></i><i></i><i></i></div>
+      </div>
+
+      <div class="radar-cluster">
+        <div class="radar-wrap">
+          <canvas id="radar-canvas" width="180" height="180" aria-label="青丘方位雷达"></canvas>
+          <span class="radar-north">N</span>
+          <span class="radar-sweep" aria-hidden="true"></span>
+        </div>
+        <div class="radar-caption">
+          <span>LOCAL SCAN</span>
+          <small>青丘 / 半径 80m</small>
+        </div>
+      </div>
+
+      <div class="action-cluster">
+        <button id="awaken-button" class="action-button" type="button">
+          <span class="action-glyph">九</span>
+          <span><strong>鸣啸</strong><small>唤醒九尾</small></span>
+        </button>
+      </div>
+
+      <div id="zone-banner" class="zone-banner" aria-live="polite">
+        <span>ENTERING</span>
+        <strong>青丘南麓</strong>
+      </div>
+
+      <div class="intro-title" aria-hidden="true">
+        <span>THE FIRST REALM</span>
+        <strong>青丘</strong>
+        <small>水墨 · 机甲 · 第一人称漫游</small>
+      </div>
+
+      <aside id="info-panel" class="info-panel" hidden aria-labelledby="info-title">
+        <button id="close-info" class="close-info" type="button" aria-label="关闭文献记录">×</button>
+        <p class="hud-label">ARCHIVE / NANSHAN JING</p>
+        <h2 id="info-title">青丘之山</h2>
+        <span class="info-source">《山海经 · 南山经》</span>
+        <blockquote>“又东三百里，曰青丘之山，其阳多玉，其阴多青䨼。有兽焉，其状如狐而九尾，其音如婴儿，能食人；食者不蛊。”</blockquote>
+        <div class="info-grid">
+          <div><span>地脉</span><strong>阳玉 · 阴青䨼</strong></div>
+          <div><span>异兽</span><strong>九尾狐</strong></div>
+          <div><span>食效</span><strong>食者不蛊</strong></div>
+        </div>
+        <p>本场景依据文本意象进行空间重构。山体、水面、遗迹、九尾骨甲与全部贴图均由代码实时生成，不引用外部模型或图片。</p>
+        <div class="info-actions">
+          <a href="https://zh.wikisource.org/zh-hans/山海經/南山經" target="_blank" rel="noreferrer">查看《南山经》原文 ↗</a>
+          <button id="close-info-bottom" type="button">返回青丘</button>
+        </div>
+      </aside>
+
+      <div id="fallback" class="fallback" hidden>
+        <div class="fallback-grid" aria-hidden="true"></div>
+        <div class="fallback-art" aria-hidden="true">
+          <span class="fallback-moon"></span>
+          <span class="fallback-ridge ridge-a"></span>
+          <span class="fallback-ridge ridge-b"></span>
+          <span class="fallback-ridge ridge-c"></span>
+          <span class="fallback-gate"></span>
+          <span class="fallback-rift"></span>
+        </div>
+        <section class="fallback-panel" role="alert">
+          <p class="hud-label">RENDER LINK OFFLINE</p>
+          <h2>三维通道未接通</h2>
+          <p id="fallback-reason">当前浏览器未能创建 WebGL 上下文。请确认图形加速已开启，或换用独立的 Chrome / Edge 标签页。</p>
+          <p class="fallback-detail">所有三维内容均由代码生成。重新检测不会下载外部模型或贴图。</p>
+          <div class="fallback-actions">
+            <button id="retry-button" type="button">重新检测</button>
+            <button id="fallback-info-button" type="button">阅读原文</button>
+          </div>
+        </section>
+      </div>
+
+      <div id="loading" class="loading-screen" role="status" aria-live="polite">
+        <div class="loading-orbit" aria-hidden="true"><i></i><i></i><i></i><span>九</span></div>
+        <div class="loading-copy">
+          <p class="hud-label">INITIALIZING QINGQIU REALM</p>
+          <h2>正在进入青丘</h2>
+          <p id="loading-label">校准目镜</p>
+          <div class="loading-track"><span id="loading-bar"></span></div>
+          <p class="loading-percent"><strong id="loading-percent">0</strong><small>%</small></p>
+        </div>
+        <p class="loading-note">山体 · 水体 · 遗迹 · 九尾骨甲 · 体积雾<br />全部由代码实时生成</p>
+      </div>
+
+      <noscript><div class="noscript">本场景需要 JavaScript 才能生成三维青丘。</div></noscript>
+    </div>
+    <script type="module" src="/src/main.js"></script>
   </body>
 </html>
